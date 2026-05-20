@@ -113,7 +113,7 @@ An exogenous shock injection system utilizing power-law distributions to model e
 * Email: srijaan@proton.me
 * X: @unemployed61269
 * Instagram: @unemployedguyfromearth
-* GitHub: github.com/unemployedguyfromearth
+* GitHub: github.com/wheelerninja67
 
 ## License
 Proprietary. All rights reserved. This repository contains architecture documentation only. The source code is private.
