@@ -1,0 +1,23 @@
+# Scenario: COVID-2020 (The Great Lockdown & Flash Crash)
+# Objective: Model an exogenous shock followed by massive liquidity injection.
+
+global:
+  seed: 20200312 # "Black Thursday" seed
+  ticks: 1500
+  agents: 2500
+  assets: 15 # Broad market impact
+
+physics:
+  herd_influence: 0.50 # Extreme correlation (Everything sold at once)
+  hawkes_spike: 0.90 # Maximum localized fear
+  hawkes_decay: 0.80 # Rapid cooling (Simulating the "Fed Put")
+  rough_hurst: 0.01 # "Fractal" volatility—near-instant price gaps
+
+microstructure:
+  base_lambda: 0.08 # Extreme price impact (The market "Gapped")
+  vpin_threshold: 0.4 # Liquidity providers fled almost immediately
+  recovery_rate: 1.25 # Massive 25% depth recovery (Central Bank intervention)
+
+regulatory:
+  bank_min_car: 0.08
+  margin_requirement: 0.50

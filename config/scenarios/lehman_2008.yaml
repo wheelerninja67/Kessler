@@ -1,0 +1,22 @@
+# Scenario: Lehman 2008 (Global Financial Crisis)
+# Objective: Model systemic insolvency via high-centrality defaults.
+
+global:
+  seed: 20080915 # Deterministic GFC Replay
+  ticks: 2000 # Longer duration to see the "Lost Decade"
+  agents: 5000 # Higher resolution of interbank connections
+
+physics:
+  herd_influence: 0.40 # Extreme mimicry (Mass panic)
+  hawkes_spike: 0.85 # Maximum contagion (Strangelet-level)
+  hawkes_decay: 0.99 # Fear almost never subsides
+  rough_hurst: 0.05 # Explosive, non-stationary volatility
+
+microstructure:
+  base_lambda: 0.05 # High impact (Thin markets)
+  vpin_threshold: 0.6 # Pre-emptive liquidity withdrawal
+  recovery_rate: 1.01 # Near-zero recovery (The Liquidity Trap)
+
+regulatory:
+  bank_min_car: 0.04 # Pre-2008 relaxed capital standards
+  margin_requirement: 0.1 # High leverage regime
