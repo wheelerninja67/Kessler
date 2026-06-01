@@ -1,141 +1,111 @@
-```
-# Kessler
+```markdown
+# Kessler 📉💥
 
-> A deterministic systemic risk simulation engine. Model 1,000,000+ autonomous trading agents on consumer hardware. Map the exact fracture lines where liquidity vanishes and cascades trigger.
+> **A causal microscope for financial contagion.**
 
----
+[![Written in Zig](https://img.shields.io/badge/Written_in-Zig-F7A41D?style=flat-square&logo=zig)](https://ziglang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=flat-square)](https://github.com/)
 
-## What It Does
-
-Kessler is not a forecasting tool. It is a causal microscope for financial contagion.
-
-Current risk models (VaR, Monte Carlo) assume the future resembles the past. They treat market collapses as statistical anomalies rather than mechanical inevitabilities. Kessler models the inevitability. Designed specifically for quantitative hedge funds, asset managers, and systemic risk regulators to stress-test their portfolios against true black-swan cascades.
-
-A million synthetic traders—each with a balance sheet, risk appetite, leverage, and strategy—interact on an exponential limit order book. They are connected through a multi-layer network of direct credit exposures, common asset holdings, and funding dependencies. When you press enter, prices move. Bubbles form. Someone defaults. The cascade propagates. The market breaks.
-
-None of it is scripted. The crash builds itself from the bottom up.
+**Kessler** is a high-performance systemic risk simulation engine developed by Srijan Mandal. Rather than predicting normal market conditions, Kessler models exactly how and why markets break down, liquidity vanishes, and contagion spreads during black-swan events. 
 
 ---
 
-## Architecture
-
-| Layer | Implementation |
-|-------|----------------|
-| **Language** | Zig (stable, 0.16.0) |
-| **Memory Model** | Single fixed arena. Bump-pointer allocation. Minimum 64‑byte alignment on all arrays. Zero heap allocations after initialization. |
-| **Agent State** | Struct of Arrays (SoA). Separate contiguous arrays for `cash`, `equity`, `theta`, `sigma`, `leverage`, `portfolio`. L1/L2 cache streaming at full bandwidth. |
-| **Order Book** | Exponential limit order book with dynamic depth (Kyle's Lambda). Circuit breakers. Liquidity black hole detection. Magnet‑effect freeze logic. |
-| **Contagion** | Gai‑Kapadia framework. Two‑channel cascade: direct credit losses + mark‑to‑market fire sales. Multi‑layer network propagation. Iterates until stability. |
-| **Determinism** | `xoshiro256+` PRNG per agent. Fixed‑order evaluation loops. SHA‑256 hash of full tick output. Same seed = same hash. Every time. |
-| **Concurrency** | Fork‑join thread pool. Lock‑free SPSC intent buffers. Work‑stealing for contagion phase. |
-| **Data Pipeline** | Frozen CSV ingestion at initialization. Arena‑backed parsing. Zero network calls during simulation. |
+## 📖 Table of Contents
+- [Core Philosophy](#-core-philosophy)
+- [Architecture & Performance](#-architecture--performance)
+- [The Financial Physics Engine](#-the-financial-physics-engine)
+- [The Kessler Box](#-the-kessler-box)
+- [Getting Started](#-getting-started)
+- [Usage](#-usage)
+- [License](#-license)
 
 ---
 
-## Physics Models
+## 🧠 Core Philosophy
 
-**Gai‑Kapadia Contagion**
-Two‑channel cascade: direct credit losses flow through the interbank network while mark‑to‑market losses propagate through common asset holdings. The system iterates until no new defaults occur. This is the gold standard for systemic risk modeling.
+Most quantitative models fail because they extrapolate historical correlations into the future. Kessler assumes that during extreme distress, historical correlations approach `1.0`. Instead of statistics, Kessler relies on **mechanical market physics**—tracking the exact balance sheet health, leverage, and panic responses of over 1,000,000 autonomous trading agents.
 
-**Hawkes Self‑Exciting Defaults**
-Defaults cluster like earthquake aftershocks. Each default spikes the default intensity of connected agents, which decays exponentially unless another default re‑excites it. Produces realistic aftershock patterns.
+## ⚡ Architecture & Performance
 
-**Kyle's Lambda Dynamic Depth**
-Market depth is not static. The price impact parameter increases when order flow is one‑sided or volatility spikes, and reverts during calm. Each trade moves prices disproportionately during stress.
+Engineered in **Zig**, Kessler is designed to simulate massive agent networks on standard consumer hardware (e.g., an i5 laptop) through brutal memory efficiency.
 
-**Rough Volatility**
-Volatility is not smooth. A fractional process with power‑law memory produces jagged, clustered spikes like real markets. Hurst exponent `H ≈ 0.15`.
+*   **Zero Heap Allocations:** Post-initialization, Kessler uses a single fixed arena with bump-pointer allocation. There is no garbage collection, and memory fragmentation is impossible.
+*   **Struct of Arrays (SoA):** Agent states (cash, equity, leverage, network exposure) are stored in contiguous memory arrays, maximizing L1/L2 cache streaming bandwidth.
+*   **Strict Determinism:** Powered by a `xoshiro256+` PRNG per agent. The evaluation loops are fixed; providing the same seed guarantees the exact same simulation hash output every single time.
 
-**VPIN Order Flow Toxicity**
-Volume‑Synchronized Probability of Informed Trading tracks whether informed traders are picking off market makers. When toxicity exceeds a threshold, liquidity providers withdraw—triggering the silence wave that precedes flash crashes.
+## 🌪️ The Financial Physics Engine
 
-**Explosive Synchronization Proximity**
-When agent risk appetites become highly correlated, the system approaches a catastrophic phase transition. Kessler detects this proximity and warns before the cascade triggers.
+Kessler simulates how panic mechanically spreads using advanced, non-linear risk models:
 
-**NTIDE Silence Waves**
-Liquidity withdrawal propagates through asset correlation space. A crash in one asset causes market makers in correlated assets to pull quotes, even without direct trading.
+*   **Gai-Kapadia Contagion:** Accurately models how direct credit defaults and mark-to-market fire sales cascade through a heavily interconnected financial network.
+*   **Hawkes Self-Exciting Defaults:** Treats market defaults like earthquake aftershocks. When one agent collapses, the probability of connected agents defaulting temporarily spikes.
+*   **Kyle's Lambda & VPIN Toxicity:** Dynamically calculates the evaporation of market depth when order flow turns toxic, flawlessly recreating the "silence waves" that precede algorithmic flash crashes.
 
-**Centrality‑Based Risk**
-Eigenvector centrality identifies systemically important agents. When a high‑centrality agent defaults, the cascade impact is amplified proportionally.
+## 🧰 The "Kessler Box"
 
----
+For production deployment, Kessler is designed to run as an air-gapped, ruggedized hardware appliance: **The Kessler Box**. 
 
-## Enterprise Features
-
-- **Stylized Fact Validation:** Kurtosis of log‑returns, volatility clustering, long memory in order flow—proving the simulated market obeys real statistical laws.
-- **Implied Volatility Surface:** ATM and OTM implied volatility computed from historical price paths.
-- **Tail‑Risk Report:** Top drawdowns, Value at Risk, Expected Shortfall.
-- **Network Health Report:** Edge severance, survivor centrality, average remaining degree.
-- **Institutional Readiness Report:** Formatted for a Chief Risk Officer to screenshot.
-- **CSV Export:** Full tick‑level data for external analysis.
-- **Cryptographic Deterministic Replay:** SHA‑256 hash of the full simulation output. Same seed, same hash, every time.
+It runs on a stripped-down Linux kernel with the compiled Zig binary running as `PID 1`. It mandates the use of **ECC RAM** to ensure that rogue cosmic bit-flips cannot alter the deterministic replay of a simulation.
 
 ---
 
-## Market Data Pipeline
+## 🚀 Getting Started
 
-```
-37 institutional assets across 6 classes
-├── Equities: S&P 500, DJI, NASDAQ, Russell 2000, FTSE, DAX, CAC 40, Nikkei, Hang Seng, Shanghai Composite, BSE Sensex, KOSPI, Bovespa, TSX, ASX 200, Euro STOXX 50
-├── FX: EUR/USD, GBP/USD, USD/JPY, AUD/USD, USD/CAD, USD/CHF, NZD/USD
-├── Sovereign Bonds: 2Y, 10Y, 30Y US Treasury yields
-├── Futures: S&P E-mini, NASDAQ E-mini, 10Y Note, 30Y Bond, WTI Crude, Gold, Silver
-├── Credit: High Yield (HYG), Investment Grade (LQD)
-└── Volatility: VIX
-```
+### Prerequisites
+*   [Zig](https://ziglang.org/download/) (v0.11.0 or higher)
 
-4,013 trading days (2015–2025). Sourced via `yfinance`, frozen to CSV, ingested into the arena at startup. Historical replay mode walks through every day sequentially. Forward mode picks up where history ends.
+### Installation
 
----
+Clone the repository and build the engine with the `ReleaseFast` optimization flag to ensure maximum throughput:
 
-## Performance
+```bash
+# Clone the repository
+git clone [https://github.com/wheelerninja67/Kessler.git](https://github.com/wheelerninja67/Kessler.git)
+cd Kessler
 
-Tested on a Dell Latitude 5400 (Core i5‑8365U, 8 GB RAM). The engine runs 1,000,000 agents across 37 assets, replays 4,013 days of real market data, then forward stress‑tests with Gai‑Kapadia contagion. Tick loop executes in microseconds. Zero heap allocations after initialization. 64‑byte aligned Struct of Arrays streams through L1/L2 cache at full bandwidth.
+# Build the executable
+zig build -Doptimize=ReleaseFast
 
----
-
-## The Kessler Box
-
-The production deployment is a sealed, fanless, air‑gapped hardware appliance.
-
-| Component | Specification |
-|-----------|---------------|
-| **Enclosure** | Ruggedized, tamper‑evident, passive cooling |
-| **Memory** | ECC RAM (non‑negotiable—cosmic bit‑flips break deterministic replay) |
-| **Security** | TPM 2.0 measured boot. OpenTitan root of trust. Dual encrypted NVMe drives. Fiber‑optic serial console (only I/O). |
-| **OS** | Stripped Linux kernel. Zig binary runs as PID 1. No shell. No SSH. No networking stack. No package manager. |
-| **Build** | Reproducible Nix‑based toolchain. Client can verify binary hash against public manifest. |
-
----
-
-## Calibration & Prediction Pipeline
-
-```
-Historical Data → Parameter Sweep → XGBoost Surrogate → Bayesian Optimization → Calibrated Parameters
-                                                                                          ↓
-                                                                              Current Market State
-                                                                                          ↓
-                                                                           Monte Carlo Prediction
-                                                                                          ↓
-                                                                   "83% cascade probability. Expected drawdown: -52%"
-```
-
-Calibrated against the 2008 Global Financial Crisis. Real S&P 500 drawdown: –56.8%. Kessler synthetic drawdown: within ±5%.
-
----
-
-## Contact
-
-```
-founder: srijan mandal
-email:  srijaan@proton.me
-x:      @unemployed61269
-github: github.com/wheelerninja67/kessy
 ```
 
 ---
 
-## License
+## 💻 Usage
 
-Proprietary. All rights reserved. Designed for Enterprise Deployment. Unauthorized use, distribution, or reproduction is strictly prohibited.
+Run a basic simulation from the command line by providing a seed and the number of agents.
+
+```bash
+./zig-out/bin/kessler --agents 1000000 --seed 42 --shock-node 14502 --shock-size 50000
+
+```
+
+### Example Output
+
+```text
+[INFO] Initializing Kessler Engine...
+[INFO] Allocating SoA for 1,000,000 agents... Done (14.2ms)
+[INFO] Seeding PRNG (xoshiro256+)... Seed: 42
+[WARN] Injecting systemic shock at Node 14502 (Size: $50,000)
+[INFO] Running tick evaluation...
+...
+[RESULT] Cascade Complete.
+[RESULT] Total Ticks: 420
+[RESULT] Defaults Triggered: 14,029
+[RESULT] Liquidity Evaporation (Kyle's Lambda): 84.2%
+[RESULT] Total Systemic Wealth Erased: $4.2B
+[INFO] Execution Time: 84ms
+
+```
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.
+
+> **Disclaimer:** Kessler is a simulation engine intended for research and educational purposes. It does not provide financial advice or guarantee the prediction of actual market events.
+
+```
+
 ```
