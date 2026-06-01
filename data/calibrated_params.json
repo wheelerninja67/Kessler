@@ -1,0 +1,11 @@
+{
+    "leverage_cap": 73.161263406654,
+    "base_depth": 1908,
+    "decay_rate": 0.05493650801130249,
+    "freeze_threshold": 0.3,
+    "freeze_duration": 5,
+    "cb_sensitivity": 2.5,
+    "value_buy_threshold": 0.4,
+    "cash_fragility": 0.026177422367128826,
+    "market_maker_resilience": 0.195420557126629
+}

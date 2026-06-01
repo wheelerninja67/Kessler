@@ -1,0 +1,150 @@
+You are **Lead Architect & Product Engineer & Lead Quant and Systems Architect** for Project Kessler.
+The previous phases (manifesto + audit + remediation) are complete.
+Now we transform the fixed engine into a **YC‑fundable enterprise product** targeting hedge funds, asset managers, and systemic risk regulators.
+
+**User constraints (non‑negotiable):**
+- **No crypto exchanges** as target market.
+- **No API / SaaS wrapper** – keep as standalone high‑performance binary + web demo.
+- All other YC strategy points are active: technical credibility, B2B stress‑testing use case, deterministic execution, WebGL demo, design partner validation.
+
+**Absolute directives from original project remain:**
+- Zero‑allocation runtime, SoA, no OOP, deterministic, bare‑metal performance.
+
+---
+
+## 1. Immediate Technical Debt Fixes (from audit)
+
+These must be completed before any new features:
+
+- [ ] Fix `prev_price = current_price` bug in `pulse.zig` – use persistent `prev_price` across ticks.
+- [ ] Implement `--seed` CLI argument – passes seed to PRNG for network topology and agent initialisation.
+- [ ] Replace dense contagion matrix with sparse adjacency (CSR) – remove 2k agent cap, support up to 1M agents.
+- [ ] Extend engine to true multi‑asset trading (use existing `positions[agent][asset]`).
+- [ ] Add `--ticks` CLI argument and respect `scenario.forward_ticks`.
+- [ ] Rewrite YAML parser to handle nested keys (`agents.count`, `market.base_depth`).
+- [ ] Delete orphaned modules (`mail.zig`, `market_data.zig`) and dead code (functions, types, unused SoA fields).
+- [ ] Implement non‑commutative hash accumulator in `diary.zig` (e.g., `hash = hash * 31 + value`).
+- [ ] Replace C `fopen` with Zig `std.fs` and fix 1MB memory leak.
+
+**After these, run the test suite (now implemented) and verify determinism with `--seed`.**
+
+---
+
+## 2. Core Product Repositioning (Hedge Fund / Stress Testing)
+
+Modify documentation and code to target **institutional stress testing**:
+
+- Update `README.md`, `ARCHITECTURE.md`, `PHYSICS.md` to:
+  - Emphasise **tail risk**, **contagion cascades**, **circuit breaker magnet effects**.
+  - Remove all crypto‑specific references (replace with “systemic risk in equity/credit markets”).
+  - Add a clear **use case**: “Stress‑test your portfolio against 2008‑style contagion in under 1 second.”
+- Implement output formats useful for quants:
+  - CSV with per‑tick price, defaults, cascade depth, leverage distribution.
+  - JSON summary of final risk metrics: max drawdown, contagion loss, VaR (historical simulation), expected shortfall.
+- Add a **batch mode** – run N scenarios with different seeds and produce distribution of outcomes (Monte Carlo).
+
+---
+
+## 3. Web Demo (Wow Factor – No API Required)
+
+Build a standalone **interactive WebGL dashboard** that showcases Kessler’s capabilities without exposing an API.
+Use the Zig engine compiled to WebAssembly (via `wasm32-unknown-unknown` target) or run a local HTTP server that spawns the binary and serves visualisation.
+
+**Requirements:**
+
+- **Frontend:** React + Three.js / D3.js (or plain HTML/JS for simplicity).
+- **Visualisations:**
+  - Price waveform (animated over time).
+  - Contagion network graph (force‑directed, nodes colour = health, edges = credit exposure).
+  - Heatmap of agent leverage distribution.
+  - Circuit breaker status indicator (frozen / magnet effect).
+- **Controls:**
+  - Dropdown to select pre‑defined scenario (Lehman 2008, Flash Crash 2010, COVID 2020).
+  - Slider for shock magnitude.
+  - Button “Run Simulation” – calls Zig engine (via Wasm or local binary) and updates visualisations.
+  - “Random Seed” button to show deterministic reproducibility.
+- **Output pane:** Displays final risk metrics and SHA‑256 hash of the run.
+
+**Implementation approach (no API):**
+
+- Option A (easiest): Compile Zig to Wasm, export `run_simulation(seed, scenario_json)` – runs entirely in browser.
+- Option B (more powerful): Local Python/Node server that spawns `kessler` binary and streams results over WebSocket. User runs server locally, then opens browser. For YC demo, pre‑record a video or host a live instance on a cloud VM.
+
+**Decision:** Implement **Option A (Wasm)** for portability – no installation, just open `index.html`. Ensure the Wasm build respects zero‑allocation and determinism.
+
+---
+
+## 4. Design Partner Validation
+
+Before YC application, secure **one** quantitative hedge fund, asset manager, or systemic risk regulator (e.g., a university endowment risk office).
+
+**Action items:**
+
+- Write a **one‑page technical white paper** (PDF) titled:
+  *“Kessler: Deterministic Agent‑Based Simulation of Contagion Cascades for Portfolio Stress Testing”*
+  – Include the math (Gai‑Kapadia, Kyle’s Lambda, circuit breaker).
+  – Include benchmark: 1M agents, 1,000 ticks, < 5 seconds on a laptop.
+  – Highlight deterministic reproducibility (same seed → same hash) – audit trail for regulators.
+- Create a **private GitHub repo** with the fixed engine + Web demo.
+- Identify 5 target firms: Renaissance Technologies (hard), Two Sigma, AQR, Bridgewater, or a smaller quant fund like QVR Advisors. Also reach out to **risk analytics teams** at BlackRock or MSCI.
+- Offer **free one‑hour guided tour** and the ability to run their own portfolio data (anonymised) through Kessler.
+- Ask for a **testimonial quote** focusing on “caught a hidden contagion path” or “1000x faster than our Monte Carlo.”
+
+**Script for initial email:**
+> Subject: Deterministic contagion simulation – 1M agents on a laptop
+>
+> We built Kessler, a bare‑metal ABM that models systemic risk as a physics engine. It’s deterministic (bit‑exact), handles Gai‑Kapadia credit contagion with circuit breakers, and runs 1000 ticks of 1M agents in <5 sec. Traditional VaR models miss cascading defaults – Kessler maps the phase transition to liquidity black holes.
+>
+> Would you be open to a 20‑min screen share where we run a flash crash on your portfolio’s asset correlation matrix? No data leaves your machine – we can compile a custom binary for your environment.
+>
+> Happy to share the white paper and a live WebGL demo.
+
+---
+
+## 5. YC Application Specifics
+
+Craft the following sections for the YC application (based on the fixed product):
+
+- **What is your company?**
+  *Kessler provides deterministic, ultra‑fast agent‑based stress testing for financial institutions. Our engine runs on a single laptop, simulates 1 million traders, and discovers contagion pathways that traditional models miss – in seconds.*
+- **What is your problem?**
+  *2008 and the 2010 Flash Crash proved that Gaussian risk models fail during crises. Regulators now demand scenario analysis, but current tools (Monte Carlo, copulas) cannot model complex agent interactions like fire sales and margin spirals. Kessler solves that.*
+- **What is your solution?**
+  *A bare‑metal simulator written in Zig, using Struct of Arrays and sparse graph algorithms. It runs deterministically, integrates circuit breakers and credit contagion, and outputs a cryptographic hash for auditability. We provide a WebGL dashboard for exploratory analysis and a batch mode for regulatory filings.*
+- **What is your market?**
+  *Global risk management software for hedge funds, asset managers, and banks – a $12B market. Our initial target is quantitative hedge funds (300 firms globally) and university endowments ($800B AUM) who need independent risk validation.*
+- **Why you?**
+  *We are systems engineers with deep financial mathematics. The lead architect (15 years old, AuDHD) designed the cache‑oblivious SoA layout and sparse contagion algorithm. We have a working, audited codebase that outperforms existing ABM frameworks by 100x.*
+- **Video demo:** Record a 2‑minute screen capture:
+  - Show terminal: `./kessler --scenario lehman_2008.yaml --seed 42` → outputs hash.
+  - Show WebGL dashboard: inject a shock, watch contagion spread in real‑time.
+  - Show deterministic re‑run with same seed → identical hash.
+
+---
+
+## 6. Implementation Order for This Prompt
+
+Execute in this exact sequence (each step produces working, tested code):
+
+1. **Fix all audit issues** (Section 1) – verify with `zig build test`.
+2. **Reposition documentation** (Section 2) – edit all `.md` files.
+3. **Build WebAssembly target** – add `wasm32` build to `build.zig`, expose `run_simulation` function.
+4. **Create frontend** – `index.html` + `app.js` + `style.css`, using Three.js for network graph.
+5. **Write white paper** – PDF with equations and benchmark results.
+6. **Record YC demo video** – script and screen capture.
+7. **Reach out to design partners** – use email template.
+
+---
+
+## 7. Output Format for Each Step
+
+For every implementation step, provide:
+
+- **File path** and **line changes**.
+- **Before/after** snippets (where relevant).
+- **Rationale** linking to YC strategy point.
+- **Test command** to verify the change.
+
+At the end, produce a **final checklist** showing all YC‑fundability criteria met.
+
+---

@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  kessler_oracle:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ./my_custom_scenarios:/opt/kessler/config/scenarios:ro
+      - ./telemetry_dumps:/opt/kessler/output:rw
+    deploy:
+      resources:
+        limits:
+          cpus: "8"
+          memory: 4G
