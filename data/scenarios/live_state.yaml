@@ -1,0 +1,12 @@
+name: Live Market Ingestion [2026-06-02 16:58:17]
+count: 1000000
+leverage_cap: 5.0
+base_depth: 800.0
+decay_rate: 0.5
+resilience: 0.1
+cb_threshold: 0.8
+forward_ticks: 500
+- tick: 50
+  type: forced_liquidation
+  magnitude: 0.15
+  asset_id: 0
