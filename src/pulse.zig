@@ -62,15 +62,32 @@ pub fn runTickLoop(num_ticks: u32, market: *bazaar.Bazaar, agents: *crowd.Crowd,
                         }
                     }
                 }
-                // Submit order shock (liquidity withdrawal or selling pressure)
-                const magnitude = shock.magnitude orelse 25000.0;
-                market.submitOrder(@intCast(shock.asset_id orelse 0), false, magnitude);
+                // Execute structural shock based on type
+                if (std.mem.eql(u8, shock.type_name, "forced_liquidation")) {
+                    const pct = shock.magnitude orelse 0.1;
+                    const victims = @as(usize, @intFromFloat(@as(f64, @floatFromInt(agents.cash.len)) * pct));
+                    for (0..victims) |i| {
+                        agents.is_defaulted[i] = true;
+                        agents.cash[i] = 0.0;
+                        agents.equity[i] = 0.0;
+                    }
+                } else {
+                    // Standard liquidity withdrawal or selling pressure
+                    const magnitude = shock.magnitude orelse 25000.0;
+                    market.submitOrder(@intCast(shock.asset_id orelse 0), false, magnitude);
+                }
             }
         }
 
         // Placeholder fallback shock if no scenario shocks are defined
         if (shocks.len == 0 and tick == 50) {
-            market.submitOrder(0, false, 25000.0);
+            market.submitOrder(0, false, 85000.0);
+            const shock_victims = agents.cash.len / 10; // 10% of market wiped out
+            for (0..shock_victims) |i| {
+                agents.is_defaulted[i] = true;
+                agents.cash[i] = 0;
+                agents.equity[i] = 0;
+            }
         }
 
         // 2. Value Investor orders
@@ -162,20 +179,24 @@ pub fn runTickLoop(num_ticks: u32, market: *bazaar.Bazaar, agents: *crowd.Crowd,
         for (agents.is_defaulted) |def| {
             if (def) active_defaults += 1;
         }
-        const avg_price = market.assets[0].price;
+        
+        var prices: [7]f64 = undefined;
+        for (0..7) |j| {
+            prices[j] = market.assets[j].price;
+        }
+
         const total_sentiment: f64 = 0.0;
         const avg_sentiment = if (agents.cash.len > 0) total_sentiment / @as(f64, @floatFromInt(agents.cash.len)) else 0.0;
 
         var hash_update: [32]u8 = [_]u8{0} ** 32;
         var hasher = std.crypto.hash.sha2.Sha256.init(.{});
         hasher.update(&std.mem.toBytes(tick));
-        hasher.update(&std.mem.toBytes(avg_price));
+        hasher.update(&std.mem.toBytes(prices[0]));
         hasher.update(&std.mem.toBytes(active_defaults));
         hasher.update(&std.mem.toBytes(cascade_depth));
-        hasher.update(&std.mem.toBytes(avg_sentiment));
         hasher.final(&hash_update);
 
-        diary.recordTick(tick, avg_price, active_defaults, cascade_depth, avg_sentiment, hash_update);
+        diary.recordTick(tick, &prices, active_defaults, cascade_depth, avg_sentiment, hash_update);
     }
 
     // =========================================================================

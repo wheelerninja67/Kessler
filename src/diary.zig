@@ -21,11 +21,13 @@ pub var max_cascade_depth: u32 = 0;
 pub var total_defaults: usize = 0;
 pub var hash_accumulator: [32]u8 = [_]u8{0} ** 32;
 
-pub fn recordTick(tick: usize, price: f64, defaults: usize, cascade_depth: u32, sentiment: f64, hash_update: [32]u8) void {
+pub var is_cli_mode: bool = true;
+
+pub fn recordTick(tick: usize, prices: []const f64, defaults: usize, cascade_depth: u32, sentiment: f64, hash_update: [32]u8) void {
     if (tick < 1000) {
         tick_history[tick] = TickRecord{
             .tick = tick,
-            .price = price,
+            .price = prices[0],
             .defaults = defaults,
             .cascade_depth = cascade_depth,
             .sentiment = sentiment,
@@ -42,11 +44,32 @@ pub fn recordTick(tick: usize, price: f64, defaults: usize, cascade_depth: u32, 
         hash_accumulator[i] = hash_accumulator[i] *% 31 +% hash_update[i];
     }
 
-    // Telemetry feedback: Print details every 10 ticks, and always on 0 and 999
-    if (tick % 10 == 0 or tick == 999) {
-        print("Tick {d:4} | Market Price: {d:6.2} | Active Defaults: {d:4} | Cascade Depth: {d} | Sentiment: {d:5.3}\n", .{
-            tick, price, defaults, cascade_depth, sentiment,
-        });
+    if (is_cli_mode) {
+        // Clear screen on first tick
+        if (tick == 0) {
+            print("\x1b[2J\x1b[H", .{});
+            print("\x1b[1;32m=== KESSLER TERMINAL [RING-0 EXECUTION MODE] ===\x1b[0m\n\n", .{});
+        }
+        
+        // Matrix style output
+        var hash_str: [8]u8 = undefined;
+        _ = std.fmt.bufPrint(&hash_str, "{x:0>8}", .{ std.mem.readInt(u32, hash_update[0..4], .little) }) catch {};
+        
+        const mbs_color = if (prices[0] < 95.0) "\x1b[1;31m" else if (prices[0] < 99.0) "\x1b[1;33m" else "\x1b[1;32m";
+        const ust_color = if (prices[1] < 95.0) "\x1b[1;31m" else if (prices[1] < 99.0) "\x1b[1;33m" else "\x1b[1;32m";
+        const spx_color = if (prices[4] < 95.0) "\x1b[1;31m" else if (prices[4] < 99.0) "\x1b[1;33m" else "\x1b[1;32m";
+        const default_color = if (defaults > 100) "\x1b[1;31m" else if (defaults > 0) "\x1b[1;33m" else "\x1b[1;30m";
+        
+        print("\x1b[1;36m[TICK {d:0>4}]\x1b[0m {s}MBS: {d:>6.2}\x1b[0m | {s}UST: {d:>6.2}\x1b[0m | {s}SPX: {d:>6.2}\x1b[0m | {s}DEFAULTS: {d:>06}\x1b[0m | CAS: {d} | \x1b[1;34m0x{s}\x1b[0m\n", .{ tick, mbs_color, prices[0], ust_color, prices[1], spx_color, prices[4], default_color, defaults, cascade_depth, hash_str });
+        
+        // Sleep removed for max speed terminal streaming effect
+    } else {
+        // Telemetry feedback: Print details every 10 ticks, and always on 0 and 999
+        if (tick % 10 == 0 or tick == 999) {
+            print("Tick {d:4} | Market Price: {d:6.2} | Active Defaults: {d:4} | Cascade Depth: {d} | Sentiment: {d:5.3}\n", .{
+                tick, prices[0], defaults, cascade_depth, sentiment,
+            });
+        }
     }
 }
 

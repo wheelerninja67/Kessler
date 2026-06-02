@@ -1,0 +1,12 @@
+name: Tsar Bomba Structural Collapse
+count: 1000000
+leverage_cap: 10.0
+base_depth: 500.0
+decay_rate: 0.9
+resilience: 0.01
+cb_threshold: 0.99
+forward_ticks: 1000
+- tick: 50
+  type: forced_liquidation
+  magnitude: 0.95
+  asset_id: 0
