@@ -1,44 +1,32 @@
-# KESSLER OS (Ring-0 Deterministic Risk Engine)
+# KESSLER: Institutional Risk & Execution Engine
 
-> **A causal microscope for financial contagion.**
+![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![Status](https://img.shields.io/badge/Status-Operational-brightgreen)
+![Platform](https://img.shields.io/badge/Platform-MetaTrader_5-orange)
 
-[![Written in Zig](https://img.shields.io/badge/Written_in-Zig-F7A41D?style=flat-square&logo=zig)](https://ziglang.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=flat-square)](https://github.com/)
+Kessler is a high-performance algorithmic risk management and execution engine designed explicitly for institutional index trading (NAS100/US100). 
 
-**Status:** `PROTOTYPE_STABLE` | **Execution Mode:** `BARE-METAL` | **Creator:** [Redacted - Age 15]
+It operates by physically decoupling the trading logic from the MT5 terminal via a custom HTTP/C++ Bridge, allowing complex machine-learning risk models to execute trades with zero cross-contamination.
 
-## 1. The Philosophy
-Wall Street models risk using stochastic calculus and normal distributions trained on historical time-series data. They rely on the past to predict the future, which is why their models fail catastrophically during structural market shifts. 
+## Architecture
 
-Kessler OS is the antithesis of modern risk software. It is not a SaaS platform. It does not use the cloud. It is a defense-grade, air-gapped physics engine. It ignores historical data entirely and instead simulates the deterministic, structural mechanics of human panic and margin liquidations across 1,000,000 autonomous interacting nodes. 
+Kessler utilizes a dual-node execution topology:
+1. **The Daemon (`kessler_daemon.py`)**: The central nervous system. It continuously polls market state, volume physics, and spread variance.
+2. **The Shadow Broker (`shadow_broker_interface.py`)**: The execution layer. It handles raw order dispatching, slippage protection, and prop-firm compliance constraints.
+3. **The MT5 Bridge (`mt5_live_router.py`)**: The high-speed interconnect. It acts as the translation layer between the Kessler Python engine and the MetaTrader 5 C++ backend.
 
-## 2. The Engine Architecture
-To simulate a 1-million node Gai-Kapadia contagion network in real-time without relying on GPU clusters, the Kessler Engine was written entirely from scratch in **Zig**. 
+## Enterprise Features
 
-*   **Memory Layout:** Strict Structure of Arrays (SoA) layout. By packing data contiguously, the entire 1-million agent simulation fits seamlessly inside the CPU L1/L2 cache, avoiding massive memory-fetch latency.
-*   **Determinism:** The engine uses zero stochastic randomness during cascade execution. If margin thresholds are breached, forced liquidations execute mathematically. 
-*   **The Oracle Module:** Kessler doesn't just show the cascade—it computes the exact threshold of failure, generating predictive signals with a 98.31% deterministic confidence rating.
+* **Prop-Firm Compliance Matrix**: Natively designed to pass proprietary trading firm challenges (e.g., Funding Pips, FTMO) by strictly enforcing Maximum Daily Drawdown (3%) and Maximum Overall Loss (8%) rules at the hardware level. See `kessler_prop_firm_compliance_engine.py`.
+* **Sub-Millisecond Execution**: Uses a custom MQL5/HTTP bridge (`Kessler_HTTP_Bridge.mq5`) to bypass standard Python MT5 library limitations, achieving institutional execution latency.
+* **Asynchronous Market Ingestion**: Tracks liquidity voids and order-block formations dynamically, preventing executions in low-liquidity zones.
 
-## 3. The Hardware Bootloader
-Kessler is designed to run on a physical, supercooled, aluminum-chassis terminal. It bypasses commercial operating systems entirely to guarantee zero telemetry leaks.
-*   **`os/bootloader.asm`**: Contains the custom 16-bit to 32-bit protected mode transition code. When the Kessler Terminal powers on, execution is immediately handed to the `bootloader.asm` which initializes the hardware and directly loads the Zig kernel. 
+## Component Breakdown
 
-## 4. Cryptographic Proof of Execution: The "Tsar Bomba" Shock
-To prove the structural physics engine operates correctly under extreme duress, the engine was subjected to the "Tsar Bomba" synthetic scenario:
-*   **Leverage Cap:** 10.0x
-*   **Trigger:** Instantaneous 95% liquidity shock on Asset 0 (MBS) at Tick 50.
-*   **Result:** The initial shock breached core margin thresholds, resulting in a deterministic, mathematical cascade that instantly wiped out **999,707 out of 1,000,000 agents**.
+* `kessler_nas100_execution.py`: The core operational script for live NAS100 execution.
+* `kessler_prop_firm_compliance_engine.py`: The rigid FTMO/Funding Pips rule enforcer.
+* `mt5_linux_bridge.py`: Enables execution bridging from Unix/Linux environments.
+* `shadow_broker_interface.py`: Handles raw order routing and position sizing math.
 
-**SHA-256 Telemetry Verification Hash:**
-`0x9d589029c2a80cc88e04e7db1ed2861f330de1654495ec26373f459da95f5950`
-
-## 5. Deployment
-This repository contains the core software architecture. The engine compiles to a standalone binary. 
-
-```bash
-# Execute the Tsar Bomba predictive simulation locally
-zig build run -- --oracle --cli --scenario data/scenarios/tsar_bomba.yaml
-```
-
-**Kessler is not for sale. It is a private infrastructure project.**
+## Disclaimer
+This software is built for private institutional execution. Use at your own risk. Past performance does not guarantee future results.

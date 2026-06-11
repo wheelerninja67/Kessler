@@ -1,10 +1,10 @@
 const std = @import("std");
 const ring_buffer = @import("ring_buffer.zig");
-const bazaar = @import("../bazaar.zig");
-const crowd = @import("../crowd.zig");
-const gossip = @import("../gossip.zig");
-const scenario = @import("../scenario.zig");
-const stash = @import("../stash.zig");
+const bazaar = @import("../exchange.zig");
+const crowd = @import("../agents.zig");
+const gossip = @import("../network.zig");
+const scenario = @import("../config_parser.zig");
+const stash = @import("../memory.zig");
 
 const c = @cImport({
     @cInclude("unistd.h");
@@ -28,7 +28,7 @@ pub fn engineMain(ring: *ring_buffer.RingBuffer) void {
     defer crowd_stash.stashDestroy(allocator);
 
     var agents = crowd.Crowd.init(&crowd_stash, agent_count, num_assets, crowd_config, 0) catch return;
-    defer agents.deinit(allocator);
+    
 
     var net = gossip.Network.init(&crowd_stash, @intCast(agent_count), 42) catch return;
 
@@ -111,6 +111,8 @@ fn guiTickLoop(market: *bazaar.Bazaar, agents: *crowd.Crowd, net: *gossip.Networ
             }
         }
 
+        // 3.5 Hawkes Intensity Decay & Herd Behavior removed in favor of Ising Spin Model in main engine
+
         // 4. Gai-Kapadia Network Contagion Cascade
         const cascade_depth = net.propagateDefaults(agents, market);
 
@@ -135,14 +137,8 @@ fn guiTickLoop(market: *bazaar.Bazaar, agents: *crowd.Crowd, net: *gossip.Networ
         for (0..agents.cash.len) |i| {
             if (agents.is_defaulted[i]) continue;
             
-            // Randomly simulate theta based on recent returns for visual effect
-            var th: f64 = 0.0;
-            if (tick > 0 and prev_price > 0.01) {
-                const ret = @log(new_price / prev_price);
-                th = ret * 10.0;
-                if (th > 1.0) th = 1.0;
-                if (th < -1.0) th = -1.0;
-            }
+            // Read true spin from agents
+            const th = @as(f64, @floatFromInt(agents.spin[i]));
             
             // Map [-1, 1] to [0, 1] for the average
             const normalized_th = (th + 1.0) / 2.0;

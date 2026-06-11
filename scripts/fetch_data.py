@@ -65,8 +65,8 @@ INSTITUTIONAL_TICKERS = [
     "LQD",
     # Volatility
     "^VIX",
-    # Crypto
-    "BTC-USD",
+    # Banks
+    "JPM",
 ]
 
 DEFAULT_START = "2015-01-01"

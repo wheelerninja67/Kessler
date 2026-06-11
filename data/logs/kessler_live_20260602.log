@@ -1,0 +1,203 @@
+
+==================================================
+CYCLE TIME: 2026-06-02 17:52:29.863223
+=== KESSLER LIVE INGESTION PROTOCOL ===
+[*] Live MBS (MBB) Price: $94.32
+[*] Live SPX (SPY) Price: $758.54
+[*] Live state successfully written to data/scenarios/live_state.yaml
+=== READY FOR ENGINE CONTINUATION ===
+==================================================
+
+==================================================
+CYCLE TIME: 2026-06-02 18:00:03.971105
+=== KESSLER LIVE INGESTION PROTOCOL ===
+[*] Live MBS (MBB) Price: $94.32
+[*] Live SPX (SPY) Price: $758.54
+[*] Live state successfully written to data/scenarios/live_state.yaml
+=== READY FOR ENGINE CONTINUATION ===
+==================================================
+
+==================================================
+CYCLE TIME: 2026-06-02 18:11:15.960671
+=== KESSLER LIVE INGESTION PROTOCOL ===
+[*] Live MBS (MBB) Price: $94.32
+[*] Live SPX (SPY) Price: $758.54
+[*] Live state successfully written to data/scenarios/live_state.yaml
+=== READY FOR ENGINE CONTINUATION ===
+==================================================
+
+==================================================
+CYCLE TIME: 2026-06-02 18:18:52.892239
+=== KESSLER LIVE INGESTION PROTOCOL ===
+[*] Live MBS (MBB) Price: $94.32
+[*] Live SPX (SPY) Price: $758.54
+[*] Live state successfully written to data/scenarios/live_state.yaml
+=== READY FOR ENGINE CONTINUATION ===
+==================================================
+
+==================================================
+CYCLE TIME: 2026-06-02 18:26:30.521798
+=== KESSLER LIVE INGESTION PROTOCOL ===
+[*] Live MBS (MBB) Price: $94.32
+[*] Live SPX (SPY) Price: $758.54
+[*] Live state successfully written to data/scenarios/live_state.yaml
+=== READY FOR ENGINE CONTINUATION ===
+==================================================
+
+==================================================
+CYCLE TIME: 2026-06-02 18:34:03.197561
+=== KESSLER LIVE INGESTION PROTOCOL ===
+[*] Live MBS (MBB) Price: $94.32
+[*] Live SPX (SPY) Price: $758.54
+[*] Live state successfully written to data/scenarios/live_state.yaml
+=== READY FOR ENGINE CONTINUATION ===
+==================================================
+
+==================================================
+CYCLE TIME: 2026-06-02 18:41:31.654750
+=== KESSLER LIVE INGESTION PROTOCOL ===
+[*] Live MBS (MBB) Price: $94.32
+[*] Live SPX (SPY) Price: $758.54
+[*] Live state successfully written to data/scenarios/live_state.yaml
+=== READY FOR ENGINE CONTINUATION ===
+==================================================
+
+==================================================
+CYCLE TIME: 2026-06-02 18:48:56.673499
+=== KESSLER LIVE INGESTION PROTOCOL ===
+[*] Live MBS (MBB) Price: $94.32
+[*] Live SPX (SPY) Price: $758.54
+[*] Live state successfully written to data/scenarios/live_state.yaml
+=== READY FOR ENGINE CONTINUATION ===
+==================================================
+
+==================================================
+CYCLE TIME: 2026-06-02 18:56:24.601870
+=== KESSLER LIVE INGESTION PROTOCOL ===
+[*] Live MBS (MBB) Price: $94.32
+[*] Live SPX (SPY) Price: $758.54
+[*] Live state successfully written to data/scenarios/live_state.yaml
+=== READY FOR ENGINE CONTINUATION ===
+==================================================
+
+==================================================
+CYCLE TIME: 2026-06-02 19:03:51.218623
+=== KESSLER LIVE INGESTION PROTOCOL ===
+[*] Live MBS (MBB) Price: $94.34
+[*] Live SPX (SPY) Price: $757.24
+[*] Live state successfully written to data/scenarios/live_state.yaml
+=== READY FOR ENGINE CONTINUATION ===
+==================================================
+
+==================================================
+CYCLE TIME: 2026-06-02 19:11:12.547426
+=== KESSLER LIVE INGESTION PROTOCOL ===
+[*] Live MBS (MBB) Price: $94.38
+[*] Live SPX (SPY) Price: $757.13
+[*] Live state successfully written to data/scenarios/live_state.yaml
+=== READY FOR ENGINE CONTINUATION ===
+==================================================
+
+==================================================
+CYCLE: 1 | TIME: 2026-06-02T22:19:25.702819
+SPY: $759.66 | MBB: $94.28
+DEFAULTS: 0 | CASCADE: 0
+SIGNAL: NO_SIGNAL | ACTION: HOLD
+EQUITY: $65,000.00 | DRAWDOWN: 0.00%
+==================================================
+
+==================================================
+CYCLE: 2 | TIME: 2026-06-02T22:24:27.995445
+SPY: $759.68 | MBB: $94.28
+DEFAULTS: 0 | CASCADE: 0
+SIGNAL: NO_SIGNAL | ACTION: HOLD
+EQUITY: $65,000.00 | DRAWDOWN: 0.00%
+==================================================
+
+==================================================
+CYCLE: 3 | TIME: 2026-06-02T22:29:30.036587
+SPY: $759.88 | MBB: $94.30
+DEFAULTS: 0 | CASCADE: 0
+SIGNAL: NO_SIGNAL | ACTION: HOLD
+EQUITY: $65,000.00 | DRAWDOWN: 0.00%
+==================================================
+
+==================================================
+CYCLE: 4 | TIME: 2026-06-02T22:34:37.190111
+SPY: $759.91 | MBB: $94.31
+DEFAULTS: 0 | CASCADE: 0
+SIGNAL: NO_SIGNAL | ACTION: HOLD
+EQUITY: $65,000.00 | DRAWDOWN: 0.00%
+==================================================
+
+==================================================
+CYCLE: 5 | TIME: 2026-06-02T22:39:40.142634
+SPY: $759.75 | MBB: $94.31
+DEFAULTS: 0 | CASCADE: 0
+SIGNAL: NO_SIGNAL | ACTION: HOLD
+EQUITY: $65,000.00 | DRAWDOWN: 0.00%
+==================================================
+
+==================================================
+CYCLE: 6 | TIME: 2026-06-02T22:44:42.020378
+SPY: $759.87 | MBB: $94.32
+DEFAULTS: 0 | CASCADE: 0
+SIGNAL: NO_SIGNAL | ACTION: HOLD
+EQUITY: $65,000.00 | DRAWDOWN: 0.00%
+==================================================
+
+==================================================
+CYCLE: 7 | TIME: 2026-06-02T22:49:45.633536
+SPY: $759.34 | MBB: $94.31
+DEFAULTS: 0 | CASCADE: 0
+SIGNAL: NO_SIGNAL | ACTION: HOLD
+EQUITY: $65,000.00 | DRAWDOWN: 0.00%
+==================================================
+
+==================================================
+CYCLE: 8 | TIME: 2026-06-02T22:54:47.578865
+SPY: $759.18 | MBB: $94.31
+DEFAULTS: 0 | CASCADE: 0
+SIGNAL: NO_SIGNAL | ACTION: HOLD
+EQUITY: $65,000.00 | DRAWDOWN: 0.00%
+==================================================
+
+==================================================
+CYCLE: 9 | TIME: 2026-06-02T23:33:30.530923
+SPY: $758.96 | MBB: $94.33
+DEFAULTS: 0 | CASCADE: 0
+SIGNAL: NO_SIGNAL | ACTION: HOLD
+EQUITY: $65,000.00 | DRAWDOWN: 0.00%
+==================================================
+
+==================================================
+CYCLE: 10 | TIME: 2026-06-02T23:38:32.897089
+SPY: $759.09 | MBB: $94.32
+DEFAULTS: 0 | CASCADE: 0
+SIGNAL: NO_SIGNAL | ACTION: HOLD
+EQUITY: $65,000.00 | DRAWDOWN: 0.00%
+==================================================
+
+==================================================
+CYCLE: 11 | TIME: 2026-06-02T23:43:50.287514
+SPY: $759.09 | MBB: $94.33
+DEFAULTS: 0 | CASCADE: 0
+SIGNAL: NO_SIGNAL | ACTION: HOLD
+EQUITY: $65,000.00 | DRAWDOWN: 0.00%
+==================================================
+
+==================================================
+CYCLE: 12 | TIME: 2026-06-02T23:48:53.090515
+SPY: $758.97 | MBB: $94.33
+DEFAULTS: 0 | CASCADE: 0
+SIGNAL: NO_SIGNAL | ACTION: HOLD
+EQUITY: $65,000.00 | DRAWDOWN: 0.00%
+==================================================
+
+==================================================
+CYCLE: 13 | TIME: 2026-06-02T23:53:58.052543
+SPY: $759.08 | MBB: $94.33
+DEFAULTS: 0 | CASCADE: 0
+SIGNAL: NO_SIGNAL | ACTION: HOLD
+EQUITY: $65,000.00 | DRAWDOWN: 0.00%
+==================================================

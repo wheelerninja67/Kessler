@@ -32,6 +32,11 @@ elif [ "$1" == "predict" ]; then
     else
         echo "Usage: kessler predict <agent_count> | kessler predict bomba | kessler predict live"
     fi
+elif [ "$1" == "portfolio" ]; then
+    python3 shadow_broker.py
+elif [ "$1" == "daemon" ]; then
+    echo "Starting Kessler Daemon v2.0 with Shadow Broker..."
+    python3 daemon.py
 else
     echo "Kessler Engine [Ring-0 CLI Wrapper]"
     echo ""
@@ -39,5 +44,9 @@ else
     echo "  kessler start <agents>      (Run baseline cascade with N agents)"
     echo "  kessler start seed --<hash> (Run deterministic physics test)"
     echo "  kessler start lehman        (Run aggressive 2008 systemic shock)"
+    echo "  kessler predict bomba       (Run Tsar Bomba predictive simulation)"
+    echo "  kessler predict live        (Run Oracle against live market data)"
+    echo "  kessler portfolio           (View Shadow Broker portfolio status)"
+    echo "  kessler daemon              (Start continuous monitoring daemon)"
     echo ""
 fi
