@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Kessler CLI Wrapper
+cd /home/mid/Projects/kessler
+
+if [ "$1" == "start" ]; then
+    if [ "$2" == "lehman" ]; then
+        # 2008 Lehman Shock: Extremely brittle market
+        zig build run -- --agents 1500000 --ticks 1500 --leverage-cap 1.5 --cash-fragility 0.99 --decay-rate 0.8
+    elif [ "$2" == "seed" ]; then
+        SEED_VAL="${3#--}"
+        if [ -z "$SEED_VAL" ]; then
+            SEED_VAL="1337"
+        fi
+        # Standard cascade but deterministic
+        zig build run -- --agents 1000000 --ticks 500 --seed "$SEED_VAL" --leverage-cap 2.0 --cash-fragility 0.8 --decay-rate 0.4
+    elif [[ "$2" =~ ^[0-9]+$ ]]; then
+        # Standard cascade
+        zig build run -- --agents "$2" --ticks 1000 --leverage-cap 2.0 --cash-fragility 0.8 --decay-rate 0.4
+    else
+        echo "Executing default engine cascade..."
+        zig build run -- --agents 1000000 --ticks 1000 --leverage-cap 2.0 --cash-fragility 0.8 --decay-rate 0.4
+    fi
+elif [ "$1" == "predict" ]; then
+    if [ "$2" == "bomba" ]; then
+        zig build run -- --oracle --cli --scenario data/scenarios/tsar_bomba.yaml
+    elif [ "$2" == "live" ]; then
+        python3 ingest.py
+        zig build run -- --oracle --cli --scenario data/scenarios/live_state.yaml
+    elif [[ "$2" =~ ^[0-9]+$ ]]; then
+        zig build run -- --oracle --cli --agents "$2" --ticks 1000 --leverage-cap 2.0 --cash-fragility 0.8 --decay-rate 0.4
+    else
+        echo "Usage: kessler predict <agent_count> | kessler predict bomba | kessler predict live"
+    fi
+elif [ "$1" == "portfolio" ]; then
+    python3 shadow_broker.py
+elif [ "$1" == "daemon" ]; then
+    echo "Starting Kessler Daemon v2.0 with Shadow Broker..."
+    python3 daemon.py
+else
+    echo "Kessler Engine [Ring-0 CLI Wrapper]"
+    echo ""
+    echo "Usage:"
+    echo "  kessler start <agents>      (Run baseline cascade with N agents)"
+    echo "  kessler start seed --<hash> (Run deterministic physics test)"
+    echo "  kessler start lehman        (Run aggressive 2008 systemic shock)"
+    echo "  kessler predict bomba       (Run Tsar Bomba predictive simulation)"
+    echo "  kessler predict live        (Run Oracle against live market data)"
+    echo "  kessler portfolio           (View Shadow Broker portfolio status)"
+    echo "  kessler daemon              (Start continuous monitoring daemon)"
+    echo ""
+fi
