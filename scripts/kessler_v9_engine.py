@@ -144,6 +144,20 @@ def run_v9_engine():
                 time.sleep(600)
                 continue
 
+            # --- HARDENED RULE #3: FLOATING EQUITY CIRCUIT BREAKER ---
+            # Protects against Funding Pips' 5% daily floating drawdown limit
+            if mt5 is not None:
+                account_info = mt5.account_info()
+                if account_info is not None:
+                    # Calculate true floating daily drawdown
+                    floating_equity = account_info.equity
+                    balance = account_info.balance
+                    if floating_equity < balance * 0.97:
+                        print(f"[KILL-SWITCH] 3% FLOATING DRAWDOWN BREACHED. HALTING NEW ENTRIES.")
+                        send_telegram_alert("🔴 [KESSLER V10]: 3% Floating Drawdown breached. Circuit breaker activated.")
+                        time.sleep(300)
+                        continue
+
             # 1. Fetch Price Data (HARDENED AGAINST NETWORK CORRUPTION)
             try:
                 if mt5 is None:
@@ -236,9 +250,8 @@ def run_v9_engine():
                     if account_info is None:
                         calculated_volume = 0.01
                     else:
-                        # AGGRESSIVE SPEEDRUN COMPOUNDING: 1.5% Risk per trade
-                        # Mathematically accelerates the snowball phase for the 3-month roadmap.
-                        risk_pct = 0.0075
+                        # V10 UPGRADE: Hard-capped fixed 0.5% risk to prevent dynamic Kelly blowups.
+                        risk_pct = 0.005
                         risk_amount = account_info.equity * risk_pct
                         
                         # A $4.00 Stop Loss distance = $400 risk per 1 lot on XAUUSD.
@@ -253,16 +266,16 @@ def run_v9_engine():
                     request = {
                         "action": mt5.TRADE_ACTION_DEAL,
                         "symbol": PRIMARY_SYMBOL,
-                        "volume": calculated_volume, # Dynamic Kelly Sizing
+                        "volume": calculated_volume,
                         "type": order_type,
                         "price": price,
                         "sl": sl_price,
                         "tp": tp_price,
-                        "deviation": 20,
+                        "deviation": 50, # Widened to prevent news-spike rejection
                         "magic": 9999,
-                        "comment": "Kessler V9 Live",
+                        "comment": "Kessler V10 Live",
                         "type_time": mt5.ORDER_TIME_GTC,
-                        "type_filling": mt5.ORDER_FILLING_IOC,
+                        "type_filling": mt5.ORDER_FILLING_RETURN, # Prevents IOC signal rejection loops
                     }
                     
                     result = mt5.order_send(request)
