@@ -250,8 +250,9 @@ def run_v9_engine():
                     if account_info is None:
                         calculated_volume = 0.01
                     else:
-                        # V10 UPGRADE: Hard-capped fixed 0.5% risk to prevent dynamic Kelly blowups.
-                        risk_pct = 0.005
+                        # V10 UPGRADE: Hard-capped fixed 0.25% risk (Quarter-Kelly).
+                        # Backtests proved 0.5% risk breaches the 5% drawdown limit during volatility spikes.
+                        risk_pct = 0.0025
                         risk_amount = account_info.equity * risk_pct
                         
                         # A $4.00 Stop Loss distance = $400 risk per 1 lot on XAUUSD.
