@@ -15,8 +15,8 @@ except ImportError:
 import urllib.request
 import urllib.parse
 
-TELEGRAM_TOKEN = "8679074060:AAHu4yoCGbwMQuiks6JkXnyBDjV_HMdPCjA"
-TELEGRAM_CHAT_ID = "6591255629" # User: CosmicKANG
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "")
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 
 def send_telegram_alert(message):
     if not TELEGRAM_CHAT_ID:
