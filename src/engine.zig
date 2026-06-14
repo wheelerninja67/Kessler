@@ -241,6 +241,26 @@ pub fn runTickLoop(num_ticks: u32, market: *bazaar.Bazaar, agents: *crowd.Crowd,
         if (new_price < min_price) min_price = new_price;
         if (new_price > max_price) max_price = new_price;
 
+        // 6. Aegis Intelligence Bridge (The Kessler God-Mode Agent)
+        // If we have an initialized bridge, we request inference from Aegis
+        var macro_features = [_]f64{0.0} ** 15;
+        // In a real live scenario, this vector is populated with the DXY, Yields, etc.
+        // For the simulation, we pass the local market state:
+        macro_features[0] = cascade_depth;
+        macro_features[1] = market.assets[0].price;
+        macro_features[2] = market.assets[0].book_depth;
+        
+        var confidence: f64 = 0.0;
+        const action = @import("ml.zig").predict_trade(&macro_features, &confidence);
+        
+        if (action == 1) {
+            // Aegis says BUY
+            market.submitOrder(0, true, 5000.0 * confidence);
+        } else if (action == 2) {
+            // Aegis says SELL
+            market.submitOrder(0, false, 5000.0 * confidence);
+        }
+
         if (prev_price > 0.01 and tick > 50) {
             var tick_return: f64 = 0.0;
             if (@abs(new_price - prev_price) > 1e-6) {

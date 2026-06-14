@@ -215,6 +215,8 @@ pub fn main(init: std.process.Init) !void {
     var agents = try agents_mod.Crowd.init(&agent_memory, agent_count, num_assets, agents_config, seed);
     var net = try network.Network.init(&agent_memory, @intCast(agent_count), seed);
 
+    ml.init_kessler_ai();
+
     const shocks = if (parsed_scenario) |sc| sc.shocks else &[_]config_parser.Shock{};
     const stats = try engine.runTickLoop(ticks, &market, &agents, &net, shocks, allocator, if (market_data != null) &(market_data.?) else null);
 

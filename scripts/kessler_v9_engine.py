@@ -50,15 +50,6 @@ PRIMARY_SYMBOL = "XAUUSD"
 def initialize_mt5():
     global mt5
     print("[*] Initializing MetaTrader 5 Bridge...")
-    if not mt5.initialize():
-        print("[!] MT5 init failed.")
-    else:
-        login_success = mt5.login(20073104, password="EVoDLj0>E", server="FundingPips-SIM1")
-        if login_success:
-            print("[*] MT5 CONNECTED: Funding Pips Live Simulation Server.")
-            send_telegram_alert("🟢 [KESSLER SYSTEM]: Successfully authenticated to Funding Pips MT5 Server.")
-        else:
-            print(f"[!] MT5 Login Failed. Error Code: {mt5.last_error()}") # LINUX ARCHITECTURE FALLBACK
     
     # LINUX ARCHITECTURE FALLBACK
     if mt5 is None:
@@ -67,10 +58,19 @@ def initialize_mt5():
         print(" [!] ENGAGING STANDALONE LOCAL SIMULATION MODE.        ")
         print("=========================================================\n")
         return True
-        
-    if not mt5.initialize():
-        print(f"[!] MT5 initialize() failed")
+
+    if not mt5.initialize(path=r"C:\Program Files\MetaTrader 5\terminal64.exe"):
+        print(f"[!] MT5 init failed. Error code: {mt5.last_error()}")
         return False
+    else:
+        login_success = mt5.login(20073104, password="EVoDLj0>E", server="FundingPips-SIM1")
+        if login_success:
+            print("[*] MT5 CONNECTED: Funding Pips Live Simulation Server.")
+            send_telegram_alert("🟢 [KESSLER SYSTEM]: Successfully authenticated to Funding Pips MT5 Server.")
+        else:
+            print(f"[!] MT5 Login Failed. Error Code: {mt5.last_error()}")
+            return False
+    
         
     account_info = mt5.account_info()
     if account_info is None:
@@ -163,7 +163,10 @@ def run_v9_engine():
                 if mt5 is None:
                     import random
                     # Mocking 50 candles for the simulated environment
-                    gold_m5 = [{'close': 2350.00 + random.uniform(-5.0, 5.0)} for _ in range(50)]
+                    gold_m5 = []
+                    for _ in range(50):
+                        c = 2350.00 + random.uniform(-5.0, 5.0)
+                        gold_m5.append({'open': c - 1, 'high': c + 2, 'low': c - 2, 'close': c})
                     current_close = float(gold_m5[-1]['close'])
                 else:
                     # Pull the last 50 candles so the DWC Matrix can calculate SMAs and Z-Scores
