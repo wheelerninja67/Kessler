@@ -24,9 +24,9 @@ const CONFIG = {
   MAX_FEED_LINES: 160,
   MAX_LOG_ROWS: 120,
 
-  START_EQUITY: 62450000000, // Citadel Securities approximate AUM ($62.45B)
-  DAILY_DD_LIMIT: 5.0,
-  DAILY_DD_WARN: 4.0,
+  START_EQUITY: 100, // Kessler Base Capital
+  DAILY_DD_LIMIT: 100.0, // No barriers
+  DAILY_DD_WARN: 80.0,
 };
 
 /* ============================================================
@@ -367,58 +367,50 @@ const MockEngine = (() => {
   }
 
   let running = false;
-  let batchTradesPerFrame = 2000;
-  let macroCycle = 0;
+  let inPosition = null;
 
   function tick() {
     if (!running) return;
 
-    // Realistic Market Simulation: Mean-reverting random walk with macro cycles
-    macroCycle += 0.01;
-    const macroTrend = Math.sin(macroCycle) * 1.5; // Institutional flow cycle
-    const microNoise = (Math.random() - 0.5) * 3.5; // Orderbook noise
-    price += macroTrend + microNoise;
+    // Kessler Price Action: 5M Sniper setup (slower macro moves)
+    price += (Math.random() - 0.5) * 3;
 
-    // Ultra-low latency jitter (microseconds)
-    latency = 0.4 + Math.random() * 0.3;
+    // Standard broker latency (Funding Pips / MT5)
+    latency = 18 + Math.random() * 12;
 
-    let batchPnl = 0;
-    let lastTrade = null;
+    // Trade Logic: Kessler SL50/TP100
+    if (!inPosition && Math.random() < 0.08) { // 8% chance to spot a setup per frame
+      inPosition = {
+        action: Math.random() < 0.5 ? 'LONG' : 'SHORT',
+        entry: price,
+        openedAt: Date.now(),
+      };
+    } else if (inPosition && Date.now() - inPosition.openedAt > 400 + Math.random() * 600) {
+      // Trade Execution: Hold for 400ms-1000ms
+      const win = Math.random() < 0.45; // 45% win rate at 1:2 RR
+      const riskAmount = Math.max(equity * 0.25, 1); // 25% risk per trade ("no barriers")
+      const pnl = win ? (riskAmount * 2) : -riskAmount; // TP100 (+2R) / SL50 (-1R)
+      
+      const exitPrice = inPosition.action === 'LONG' ? inPosition.entry + (win ? 100 : -50) 
+                                                     : inPosition.entry - (win ? 100 : -50);
+      
+      equity += pnl;
 
-    // Citadel-style Market Making: 51.1% winrate, institutional size
-    for (let i = 0; i < batchTradesPerFrame; i++) {
-      const win = Math.random() < 0.511; 
-      // Trading blocks of 50,000 shares, capturing 1-2 ticks
-      const pnl = win ? (425000 + Math.random() * 50000) : -(420000 + Math.random() * 50000);
-      batchPnl += pnl;
+      prependTradeRow({
+        time: fmtClockTime(new Date()).slice(0, 8),
+        action: inPosition.action,
+        entry: inPosition.entry,
+        exit: exitPrice,
+        pnl: pnl,
+        durationSec: (Date.now() - inPosition.openedAt) / 1000,
+      });
 
-      if (i === batchTradesPerFrame - 1) {
-        lastTrade = {
-          action: Math.random() < 0.5 ? 'BLOCK-BUY' : 'BLOCK-SELL',
-          entry: price,
-          exit: price + (win ? 0.25 : -0.25),
-          pnl: pnl,
-        };
-      }
+      renderEquity(equity);
+      if (equity > state.dayStartEquity) state.dayStartEquity = equity;
+      renderDrawdown(equity);
+      
+      inPosition = null;
     }
-
-    equity += batchPnl;
-    state.tradeCount += (batchTradesPerFrame - 1);
-
-    prependTradeRow({
-      time: fmtClockTime(new Date()).slice(0, 8),
-      action: lastTrade.action,
-      entry: lastTrade.entry,
-      exit: lastTrade.exit,
-      pnl: lastTrade.pnl,
-      durationSec: 0.0004, // 400 microseconds (fiber optic routing)
-    });
-
-    renderEquity(equity);
-    
-    // Drawdown calculated dynamically from peak
-    if (equity > state.dayStartEquity) state.dayStartEquity = equity;
-    renderDrawdown(equity);
 
     let [a, b, c] = randomSoftmax();
     pushFeedLine({
@@ -428,13 +420,11 @@ const MockEngine = (() => {
 
     dom.chartPrice.textContent = fmtPrice(price);
     
-    // Throttle chart visual updates slightly so it looks organic
-    if (Math.random() > 0.3) {
-      updateChart(price);
-    }
+    // Smooth 60FPS chart updating
+    updateChart(price);
 
     if (dom.feedRate) {
-      dom.feedRate.textContent = `~120,000 Hz`;
+      dom.feedRate.textContent = `~2 Hz`;
     }
 
     renderStatus(true, latency);
