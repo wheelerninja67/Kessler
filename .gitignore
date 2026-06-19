@@ -1,7 +1,9 @@
-zig-cache/
-zig-out/
-.zig-cache/
-*.o
-*.a
-.kessler_private/
-*.csv
+# Ignore everything in the project root
+*
+
+# But explicitly allow the dashboard directory
+!dashboard/
+!dashboard/**
+
+# Allow this .gitignore file itself
+!.gitignore
