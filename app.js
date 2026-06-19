@@ -134,37 +134,35 @@ function initChart() {
   const h = container.clientHeight || 400;
 
   state.chart = LightweightCharts.createChart(container, {
-    width: w,
-    height: h,
     layout: {
-      background: { type: 'solid', color: '#000000' },
-      textColor: '#888',
+      background: { type: 'solid', color: 'transparent' },
+      textColor: '#6E6E73',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif',
     },
     grid: {
-      vertLines: { color: '#111' },
-      horzLines: { color: '#111' },
-    },
-    rightPriceScale: {
-      borderVisible: false,
-    },
-    timeScale: {
-      borderVisible: false,
-      timeVisible: true,
-      secondsVisible: true,
+      vertLines: { color: 'rgba(28, 28, 30, 0.04)' },
+      horzLines: { color: 'rgba(28, 28, 30, 0.04)' },
     },
     crosshair: {
       mode: LightweightCharts.CrosshairMode.Normal,
-      vertLine: { color: '#333', labelBackgroundColor: '#111' },
-      horzLine: { color: '#333', labelBackgroundColor: '#111' },
-    }
+      vertLine: { color: 'rgba(94, 92, 230, 0.3)' },
+      horzLine: { color: 'rgba(94, 92, 230, 0.3)' },
+    },
+    rightPriceScale: {
+      borderColor: 'rgba(28, 28, 30, 0.1)',
+    },
+    timeScale: {
+      borderColor: 'rgba(28, 28, 30, 0.1)',
+      timeVisible: true,
+      secondsVisible: true,
+    },
   });
 
   state.lineSeries = state.chart.addSeries(LightweightCharts.LineSeries, {
-    color: '#888',
-    lineWidth: 1,
-    crosshairMarkerVisible: false,
-    lastValueVisible: false,
-    priceLineVisible: false,
+    color: '#5E5CE6',
+    lineWidth: 2,
+    crosshairMarkerRadius: 4,
+    lastPriceAnimation: 1,
   });
   
   // Robust resize observer
