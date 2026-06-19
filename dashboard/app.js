@@ -24,7 +24,7 @@ const CONFIG = {
   MAX_FEED_LINES: 160,
   MAX_LOG_ROWS: 120,
 
-  START_EQUITY: 100000,
+  START_EQUITY: 62450000000, // Citadel Securities approximate AUM ($62.45B)
   DAILY_DD_LIMIT: 5.0,
   DAILY_DD_WARN: 4.0,
 };
@@ -385,15 +385,16 @@ const MockEngine = (() => {
     let batchPnl = 0;
     let lastTrade = null;
 
-    // Citadel-style Market Making: 50.8% winrate, micro-edge capturing spread
+    // Citadel-style Market Making: 51.1% winrate, institutional size
     for (let i = 0; i < batchTradesPerFrame; i++) {
-      const win = Math.random() < 0.508; 
-      const pnl = win ? (4.5 + Math.random() * 1.5) : -(4.6 + Math.random() * 1.5);
+      const win = Math.random() < 0.511; 
+      // Trading blocks of 50,000 shares, capturing 1-2 ticks
+      const pnl = win ? (425000 + Math.random() * 50000) : -(420000 + Math.random() * 50000);
       batchPnl += pnl;
 
       if (i === batchTradesPerFrame - 1) {
         lastTrade = {
-          action: Math.random() < 0.5 ? 'MAKER-BUY' : 'MAKER-SELL',
+          action: Math.random() < 0.5 ? 'BLOCK-BUY' : 'BLOCK-SELL',
           entry: price,
           exit: price + (win ? 0.25 : -0.25),
           pnl: pnl,
