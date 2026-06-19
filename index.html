@@ -3,75 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KESSLER // VISION</title>
+<title>KESSLER // RAMS</title>
 
-<!-- Apple Fonts / Fallbacks -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="lightweight-charts.js"></script>
 
-<link rel="stylesheet" href="styles.css?v=2">
+<link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
 
-<header class="top-bar glass-panel" style="margin: 32px 32px 0 32px;">
-  <div class="metric" id="metric-equity">
-    <span class="metric__label">Equity</span>
-    <span class="metric__value" id="val-equity">$100,000.00</span>
+<header class="top-bar">
+  <div class="panel metric-card" id="metric-equity">
+    <span class="metric-card__label">Equity</span>
+    <span class="metric-card__value" id="val-equity">$100,000.00</span>
   </div>
 
-  <div class="metric metric--dd" id="metric-dd">
-    <span class="metric__label">Daily Drawdown</span>
-    <span class="metric__value" id="val-dd">-0.0% / 5.0%</span>
+  <div class="panel metric-card" id="metric-dd">
+    <span class="metric-card__label">Capital Drawdown</span>
+    <span class="metric-card__value" id="val-dd">-0.0%</span>
   </div>
 
-  <div class="metric" id="metric-status">
-    <div class="metric__label">System</div>
-    <div class="metric__value metric__value--status">
+  <div class="panel metric-card" id="metric-status">
+    <span class="metric-card__label">System Engine</span>
+    <div class="status-indicator">
       <i id="status-dot" class="status-dot"></i>
       <span id="status-text">HFT // SL50-TP100</span>
-      <span class="metric__divider">·</span>
-      <span id="val-latency">— ms</span>
     </div>
   </div>
 
-  <div class="metric">
-    <span class="metric__label">Clock</span>
-    <span class="metric__value" id="clock" style="font-family: var(--font-mono); font-size: 1.2rem;">00:00:00 UTC</span>
+  <div class="panel metric-card">
+    <span class="metric-card__label">Clock</span>
+    <span class="metric-card__value" id="clock" style="font-family: var(--font-mono); font-size: 1.8rem;">00:00:00</span>
   </div>
 </header>
 
-<main class="main-content" style="margin-top: 24px;">
+<main class="grid-layout">
 
-  <!-- Log Section (Left Foreground) -->
-  <aside class="log-section glass-panel">
-    <div class="log-section__header">
-      <span class="log-section__title">Execution Log</span>
-      <span class="log-count" id="log-count">0 Trades</span>
+  <!-- Left Side Panel (Log Stats) -->
+  <aside class="panel side-view">
+    <div class="panel-header">
+      <span>Execution</span>
+      <span id="log-count">0 Trades</span>
     </div>
-    <div id="execution-log">
-      <!-- JS injected log rows here -->
+    <!-- Execution log stats could go here if needed, but we put the tape on the bottom -->
+    <div style="padding: 24px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-slate);">
+      <p>Strategy: Reversion</p>
+      <br>
+      <p>Holding: ~200ms</p>
+      <br>
+      <p>Latency: <span id="val-latency">— ms</span></p>
     </div>
   </aside>
 
-  <!-- Chart Section (Center Midground) -->
-  <section class="chart-section glass-panel">
-    <div class="log-section__header">
-      <span class="log-section__title">NAS100 / Spatial Rendering</span>
-      <span class="log-count" id="chart-price">—</span>
+  <!-- Center Chart -->
+  <section class="panel chart-view">
+    <div class="panel-header">
+      <span>NAS100 / Geometric Trace</span>
+      <span id="chart-price">—</span>
     </div>
-    <div id="chart-stub" style="flex: 1; border-radius: 16px; overflow: hidden; margin: 16px; height: 100%;">
+    <div id="chart-container">
       <!-- Chart injected here -->
     </div>
   </section>
 
-  <!-- Feed Section (Right Background) -->
-  <aside class="feed-section glass-panel">
-    <div class="feed-section__header">
-      <span class="feed-section__title">Neural Tensors</span>
-      <span class="log-count" id="feed-rate">~20 Hz</span>
+  <!-- Right Side Panel (Neural Tensors) -->
+  <aside class="panel side-view">
+    <div class="panel-header">
+      <span>Neural Tensors</span>
+      <span id="feed-rate">~20 Hz</span>
     </div>
     <div id="feed">
       <!-- Neural feed here -->
@@ -80,6 +81,11 @@
 
 </main>
 
-<script src="app.js?v=2" defer></script>
+<!-- Bottom Execution Tape -->
+<div class="log-ticker" id="execution-log">
+  <!-- JS injected log blocks here -->
+</div>
+
+<script src="app.js?v=3" defer></script>
 </body>
 </html>

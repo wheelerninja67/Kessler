@@ -1,30 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@400;500;600&display=swap');
 
 :root {
-  /* Spatial Environment */
-  --bg-gradient-start: #FFF8F0;
-  --bg-gradient-end: #F0EAE4;
+  /* Ramsian Palette */
+  --bg-plaster: #F7F5F0;
+  --panel-limestone: #E8E4DC;
+  --border-stone: #CDC9C1;
   
-  /* Glass Material */
-  --glass-bg: rgba(255, 250, 245, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.8);
-  --glass-shadow: 0 8px 32px rgba(28, 28, 30, 0.04), 0 2px 8px rgba(28, 28, 30, 0.02);
+  --text-charcoal: #2B2A26;
+  --text-slate: #5E6472;
   
-  /* Typography Colors */
-  --text-primary: #1C1C1E;
-  --text-secondary: #6E6E73;
-  --text-tertiary: #A1A1A6;
-  
-  /* Accents */
-  --accent-indigo: #5E5CE6;
-  --accent-indigo-glow: rgba(94, 92, 230, 0.2);
-  --accent-mint: #34C759;
-  --accent-saffron: #FF9F0A;
-  --accent-rose: #FF3B30;
-  
+  --accent-terracotta: #C85A17;
+  --accent-steelblue: #7A9CAE;
+  --data-seafoam: #A7C4C2;
+  --data-sand: #D4A373;
+
   /* Typography */
-  --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
-  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", monospace;
+  --font-inter: 'Inter', -apple-system, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 * {
@@ -34,226 +27,156 @@
 }
 
 body {
-  background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
-  color: var(--text-primary);
-  font-family: var(--font-system);
-  font-weight: 400;
+  background-color: var(--bg-plaster);
+  color: var(--text-charcoal);
+  font-family: var(--font-inter);
   height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  padding: 32px;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Glass Panel Base Class */
-.glass-panel {
-  background: var(--glass-bg);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  border: 1px solid var(--glass-border);
-  border-radius: 24px;
-  box-shadow: var(--glass-shadow);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.glass-panel:hover {
-  box-shadow: 0 12px 48px rgba(28, 28, 30, 0.08), 0 4px 16px rgba(28, 28, 30, 0.04);
+/* Base Panel */
+.panel {
+  background-color: var(--panel-limestone);
+  border: 1px solid var(--border-stone);
+  border-radius: 4px;
 }
 
 /* ---------------------------------------------------
-   TOP BAR (Metrics)
+   HEADER (Top Bar)
 --------------------------------------------------- */
 .top-bar {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  padding: 24px 32px;
-  z-index: 10;
+  margin-bottom: 24px;
 }
 
-.metric {
-  flex: 1;
-  padding: 16px 24px;
+.metric-card {
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  justify-content: space-between;
 }
 
-.metric__label {
-  font-size: 0.75rem;
+.metric-card__label {
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+  color: var(--text-slate);
   font-weight: 600;
+  margin-bottom: 16px;
 }
 
-.metric__value {
-  font-size: 1.5rem;
-  font-weight: 300;
-  color: var(--text-primary);
+.metric-card__value {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  color: var(--text-charcoal);
   letter-spacing: -0.02em;
 }
 
-.metric__value--status {
+.status-indicator {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.metric__divider {
-  color: var(--text-tertiary);
-  margin: 0 8px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
 }
 
 .status-dot {
   width: 8px;
   height: 8px;
+  background-color: var(--accent-terracotta);
   border-radius: 50%;
-  background-color: var(--accent-indigo);
-  box-shadow: 0 0 12px var(--accent-indigo-glow);
-}
-
-.status-dot.offline {
-  background-color: var(--accent-saffron);
-  box-shadow: 0 0 12px rgba(255, 159, 10, 0.3);
-}
-
-.warning .metric__value {
-  color: var(--accent-saffron);
 }
 
 /* ---------------------------------------------------
-   MAIN CONTENT AREA
+   MAIN GRID (12-column layout approximation)
 --------------------------------------------------- */
-.main-content {
+.grid-layout {
   display: flex;
   flex: 1;
   gap: 24px;
-  padding: 0 32px 32px 32px;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 200px);
 }
 
-/* CHART SECTION */
-.chart-section {
-  flex: 2.5;
+/* Center Chart (6 columns) */
+.chart-view {
+  flex: 2;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  position: relative;
+}
+
+.panel-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-stone);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-slate);
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
 }
 
 #chart-container {
   flex: 1;
-  border-radius: 16px;
-  overflow: hidden;
-  margin: 16px;
+  width: 100%;
 }
 
-/* EXECUTION LOG SECTION */
-.log-section {
+/* Side Panels */
+.side-view {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  position: relative;
-}
-
-.log-section__header {
-  padding: 20px 24px;
-  border-bottom: 1px solid rgba(28, 28, 30, 0.06);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.log-section__title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: 0.02em;
-}
-
-.log-count {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-#execution-log {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-#execution-log::-webkit-scrollbar {
-  width: 6px;
-}
-#execution-log::-webkit-scrollbar-thumb {
-  background: rgba(28, 28, 30, 0.1);
-  border-radius: 3px;
-}
-
-.log-row {
-  display: grid;
-  grid-template-columns: 60px 45px 1fr 1fr;
-  align-items: center;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 12px;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--text-primary);
-  box-shadow: 0 2px 8px rgba(28, 28, 30, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-.log-row:first-child {
-  background: rgba(255, 255, 255, 0.8);
-  border-left: 3px solid var(--accent-indigo);
-}
-
-.log-row.win .log-pnl { color: var(--accent-indigo); font-weight: 600; }
-.log-row.loss .log-pnl { color: var(--accent-saffron); }
-
-.log-time { color: var(--text-secondary); font-size: 0.7rem; }
-.log-action { font-weight: 600; }
-.log-price { text-align: right; color: var(--text-secondary); }
-.log-pnl { text-align: right; }
-
-/* NEURAL FEED SECTION */
-.feed-section {
-  flex: 0.8;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.feed-section__header {
-  padding: 20px 24px;
-  border-bottom: 1px solid rgba(28, 28, 30, 0.06);
-}
-
-.feed-section__title {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: 0.02em;
 }
 
 #feed {
   flex: 1;
-  padding: 16px 24px;
+  padding: 16px;
   overflow-y: auto;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--text-secondary);
-  line-height: 1.8;
-  word-break: break-all;
+  font-size: 0.75rem;
+  color: var(--text-slate);
+  line-height: 1.6;
+}
+#feed::-webkit-scrollbar { display: none; }
+
+/* ---------------------------------------------------
+   BOTTOM TICKER (Execution Log)
+--------------------------------------------------- */
+.log-ticker {
+  margin-top: 24px;
+  height: 80px;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  align-items: center;
+  gap: 16px;
 }
 
-#feed::-webkit-scrollbar {
-  display: none;
+.log-ticker::-webkit-scrollbar { display: none; }
+
+.log-entry {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 12px 24px;
+  border: 1px solid var(--border-stone);
+  background-color: var(--bg-plaster);
+  border-radius: 2px;
+  flex-shrink: 0;
 }
+
+.log-entry.win { border-left: 4px solid var(--accent-terracotta); }
+.log-entry.loss { border-left: 4px solid var(--accent-steelblue); }
+
+.log-time { color: var(--text-slate); }
+.log-action { font-weight: 600; color: var(--text-charcoal); }
+.log-price { color: var(--text-slate); }
+.log-pnl.win-text { color: var(--accent-terracotta); font-weight: 600; }
+.log-pnl.loss-text { color: var(--accent-steelblue); }

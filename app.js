@@ -127,7 +127,8 @@ function renderClock() {
    ============================================================ */
 
 function initChart() {
-  const container = document.getElementById('chart-stub');
+  const container = document.getElementById('chart-container');
+  if (!container) return;
   container.innerHTML = ''; // Clear placeholder
   
   const w = container.clientWidth || 600;
@@ -136,30 +137,30 @@ function initChart() {
   state.chart = LightweightCharts.createChart(container, {
     layout: {
       background: { type: 'solid', color: 'transparent' },
-      textColor: '#6E6E73',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif',
+      textColor: '#5E6472',
+      fontFamily: 'Inter, -apple-system, sans-serif',
     },
     grid: {
-      vertLines: { color: 'rgba(28, 28, 30, 0.04)' },
-      horzLines: { color: 'rgba(28, 28, 30, 0.04)' },
+      vertLines: { color: 'rgba(205, 201, 193, 0.4)' },
+      horzLines: { color: 'rgba(205, 201, 193, 0.4)' },
     },
     crosshair: {
       mode: LightweightCharts.CrosshairMode.Normal,
-      vertLine: { color: 'rgba(94, 92, 230, 0.3)' },
-      horzLine: { color: 'rgba(94, 92, 230, 0.3)' },
+      vertLine: { color: 'rgba(43, 42, 38, 0.3)' },
+      horzLine: { color: 'rgba(43, 42, 38, 0.3)' },
     },
     rightPriceScale: {
-      borderColor: 'rgba(28, 28, 30, 0.1)',
+      borderColor: 'rgba(205, 201, 193, 0.8)',
     },
     timeScale: {
-      borderColor: 'rgba(28, 28, 30, 0.1)',
+      borderColor: 'rgba(205, 201, 193, 0.8)',
       timeVisible: true,
       secondsVisible: true,
     },
   });
 
   state.lineSeries = state.chart.addSeries(LightweightCharts.LineSeries, {
-    color: '#5E5CE6',
+    color: '#A7C4C2',
     lineWidth: 2,
     crosshairMarkerRadius: 4,
     lastPriceAnimation: 1,
@@ -250,7 +251,7 @@ function pushFeedLine({ ts, longP, shortP, flatP }) {
 
 function prependTradeRow(trade) {
   const row = document.createElement('div');
-  row.className = 'log-row ' + (trade.pnl >= 0 ? 'win' : 'loss');
+  row.className = 'log-entry ' + (trade.pnl >= 0 ? 'win' : 'loss');
 
   const timeDiv = document.createElement('div');
   timeDiv.className = 'log-time';
@@ -268,7 +269,7 @@ function prependTradeRow(trade) {
   row.appendChild(priceDiv);
 
   const pnlDiv = document.createElement('div');
-  pnlDiv.className = 'log-pnl';
+  pnlDiv.className = 'log-pnl ' + (trade.pnl >= 0 ? 'win-text' : 'loss-text');
   pnlDiv.textContent = (trade.pnl >= 0 ? '+' : '') + fmtUSD(trade.pnl).replace('$', '$');
   row.appendChild(pnlDiv);
 
