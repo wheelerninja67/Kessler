@@ -16,9 +16,10 @@ const CONFIG = {
   WS_RECONNECT_MIN_MS: 1000,
   WS_RECONNECT_MAX_MS: 10000,
 
-  MOCK_TICK_MS: 300,
-  MOCK_TRADE_CHANCE: 0.02,     // per tick, while flat
+  MOCK_TICK_MS: 50,           // HFT TICK RATE: 20 ticks per second
+  MOCK_TRADE_CHANCE: 0.6,     // 60% chance to enter a trade instantly
   MOCK_LATENCY_BASE: 18,
+  MOCK_VOLATILITY: 3.5,       // Higher volatility for aggressive chart movement
 
   MAX_FEED_LINES: 160,
   MAX_LOG_ROWS: 120,
@@ -406,8 +407,9 @@ const MockEngine = (() => {
         entry: price,
         openedAt: Date.now(),
       };
-    } else if (inPosition && Date.now() - inPosition.openedAt > 3000 + Math.random() * 9000) {
-      const win = Math.random() < 0.37; // matches Kessler's target breakeven-plus winrate
+    } else if (inPosition && Date.now() - inPosition.openedAt > 150 + Math.random() * 300) {
+      // HFT Execution: Hold for 150ms to 450ms before violently exiting
+      const win = Math.random() < 0.37; // Kessler's target winrate
       const pnl = win ? 2000 * (0.9 + Math.random() * 0.2) : -1000 * (0.9 + Math.random() * 0.2);
       const exit = inPosition.action === 'LONG' ? inPosition.entry + (win ? 100 : -50)
                                                   : inPosition.entry - (win ? 100 : -50);
