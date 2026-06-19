@@ -44,7 +44,7 @@ const dom = {
   feed:       document.getElementById('feed'),
   feedRate:   document.getElementById('feed-rate'),
   chartPrice: document.getElementById('chart-price'),
-  logBody:    document.getElementById('log-body'),
+  logBody:    document.getElementById('execution-log'),
   logCount:   document.getElementById('log-count'),
 };
 
@@ -249,44 +249,33 @@ function pushFeedLine({ ts, longP, shortP, flatP }) {
    ============================================================ */
 
 function prependTradeRow(trade) {
-  const removeEmptyState = dom.logBody.querySelector('.log-empty-row');
-  if (removeEmptyState) removeEmptyState.remove();
+  const row = document.createElement('div');
+  row.className = 'log-row ' + (trade.pnl >= 0 ? 'win' : 'loss');
 
-  const tr = document.createElement('tr');
+  const timeDiv = document.createElement('div');
+  timeDiv.className = 'log-time';
+  timeDiv.textContent = trade.time;
+  row.appendChild(timeDiv);
 
-  const tdTime = document.createElement('td');
-  tdTime.className = 'col-time';
-  tdTime.textContent = trade.time;
-  tr.appendChild(tdTime);
+  const actionDiv = document.createElement('div');
+  actionDiv.className = 'log-action';
+  actionDiv.textContent = trade.action;
+  row.appendChild(actionDiv);
 
-  const tdAction = document.createElement('td');
-  const tag = document.createElement('span');
-  tag.className = 'action-tag action-tag--' + trade.action.toLowerCase();
-  tag.textContent = `[${trade.action}]`;
-  tdAction.appendChild(tag);
-  tr.appendChild(tdAction);
+  const priceDiv = document.createElement('div');
+  priceDiv.className = 'log-price';
+  priceDiv.innerHTML = `${fmtPrice(trade.entry)} &rarr; ${fmtPrice(trade.exit)}`;
+  row.appendChild(priceDiv);
 
-  const tdEntry = document.createElement('td');
-  tdEntry.textContent = fmtPrice(trade.entry);
-  tr.appendChild(tdEntry);
+  const pnlDiv = document.createElement('div');
+  pnlDiv.className = 'log-pnl';
+  pnlDiv.textContent = (trade.pnl >= 0 ? '+' : '') + fmtUSD(trade.pnl).replace('$', '$');
+  row.appendChild(pnlDiv);
 
-  const tdExit = document.createElement('td');
-  tdExit.textContent = fmtPrice(trade.exit);
-  tr.appendChild(tdExit);
-
-  const tdPnl = document.createElement('td');
-  tdPnl.className = trade.pnl >= 0 ? 'pnl--pos' : 'pnl--neg';
-  tdPnl.textContent = (trade.pnl >= 0 ? '+' : '') + fmtUSD(trade.pnl).replace('$', '$');
-  tr.appendChild(tdPnl);
-
-  const tdDur = document.createElement('td');
-  tdDur.textContent = fmtDuration(trade.durationSec);
-  tr.appendChild(tdDur);
-
-  dom.logBody.insertBefore(tr, dom.logBody.firstChild);
+  dom.logBody.insertBefore(row, dom.logBody.firstChild);
 
   state.tradeCount += 1;
-  dom.logCount.textContent = `${state.tradeCount} TRADE${state.tradeCount === 1 ? '' : 'S'}`;
+  dom.logCount.textContent = `${state.tradeCount} Trades`;
 
   while (dom.logBody.childElementCount > CONFIG.MAX_LOG_ROWS) {
     dom.logBody.removeChild(dom.logBody.lastChild);
