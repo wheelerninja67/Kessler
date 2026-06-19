@@ -366,69 +366,81 @@ const MockEngine = (() => {
     return [r1 / sum, r2 / sum, r3 / sum];
   }
 
+  let running = false;
+  let batchTradesPerFrame = 2000;
+
   function tick() {
+    if (!running) return;
+
     // price random walk
     price += (Math.random() - 0.5) * 6;
 
-    // latency jitter
-    latency = CONFIG.MOCK_LATENCY_BASE + Math.random() * 14;
+    // Ultra-low latency jitter (microseconds)
+    latency = 0.8 + Math.random() * 0.4;
 
-    // neural feed line — biased toward FLAT, matching sparse-trade reality
+    let batchPnl = 0;
+    let lastTrade = null;
+
+    // Process 2000 trades per frame (approx 120,000 trades per second at 60 FPS)
+    for (let i = 0; i < batchTradesPerFrame; i++) {
+      const win = Math.random() < 0.42; // Citadel winrate
+      const pnl = win ? 50 * (0.9 + Math.random() * 0.2) : -30 * (0.9 + Math.random() * 0.2);
+      batchPnl += pnl;
+
+      if (i === batchTradesPerFrame - 1) {
+        lastTrade = {
+          action: Math.random() < 0.5 ? 'LONG' : 'SHORT',
+          entry: price,
+          exit: price + (win ? 2 : -1),
+          pnl: pnl,
+        };
+      }
+    }
+
+    equity += batchPnl;
+    
+    // Inject the massive trade volume into the state
+    state.tradeCount += (batchTradesPerFrame - 1);
+
+    prependTradeRow({
+      time: fmtClockTime(new Date()).slice(0, 8),
+      action: lastTrade.action,
+      entry: lastTrade.entry,
+      exit: lastTrade.exit,
+      pnl: lastTrade.pnl,
+      durationSec: 0.001, // 1 millisecond hold
+    });
+
+    renderEquity(equity);
+    renderDrawdown(equity);
+
     let [a, b, c] = randomSoftmax();
-    const flatP = Math.max(c, 0.55 + Math.random() * 0.35);
-    const remainder = 1 - flatP;
-    const longP = remainder * (0.4 + Math.random() * 0.2);
-    const shortP = remainder - longP;
-
     pushFeedLine({
       ts: fmtClockTime(new Date()),
-      longP, shortP, flatP,
+      longP: a, shortP: b, flatP: c,
     });
 
     dom.chartPrice.textContent = fmtPrice(price);
     updateChart(price);
 
-    // trade lifecycle
-    if (!inPosition && Math.random() < CONFIG.MOCK_TRADE_CHANCE) {
-      inPosition = {
-        action: Math.random() < 0.5 ? 'LONG' : 'SHORT',
-        entry: price,
-        openedAt: Date.now(),
-      };
-    } else if (inPosition && Date.now() - inPosition.openedAt > 150 + Math.random() * 300) {
-      // HFT Execution: Hold for 150ms to 450ms before violently exiting
-      const win = Math.random() < 0.37; // Kessler's target winrate
-      const pnl = win ? 2000 * (0.9 + Math.random() * 0.2) : -1000 * (0.9 + Math.random() * 0.2);
-      const exit = inPosition.action === 'LONG' ? inPosition.entry + (win ? 100 : -50)
-                                                  : inPosition.entry - (win ? 100 : -50);
-      equity += pnl;
-
-      prependTradeRow({
-        time: fmtClockTime(new Date()).slice(0, 8),
-        action: inPosition.action,
-        entry: inPosition.entry,
-        exit,
-        pnl,
-        durationSec: (Date.now() - inPosition.openedAt) / 1000,
-      });
-
-      renderEquity(equity);
-      renderDrawdown(equity);
-      
-      inPosition = null;
+    if (dom.feedRate) {
+      dom.feedRate.textContent = `~120,000 Hz`;
     }
 
     renderStatus(true, latency);
+    
+    requestAnimationFrame(tick);
   }
 
   return {
     start() {
+      running = true;
       renderEquity(equity);
       renderDrawdown(equity);
-      timer = setInterval(tick, CONFIG.MOCK_TICK_MS);
+      requestAnimationFrame(tick);
     },
     stop() {
-      clearInterval(timer);
+      running = false;
     },
   };
 })();
