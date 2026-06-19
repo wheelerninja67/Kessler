@@ -368,38 +368,40 @@ const MockEngine = (() => {
 
   let running = false;
   let batchTradesPerFrame = 2000;
+  let macroCycle = 0;
 
   function tick() {
     if (!running) return;
 
-    // price random walk
-    price += (Math.random() - 0.5) * 6;
+    // Realistic Market Simulation: Mean-reverting random walk with macro cycles
+    macroCycle += 0.01;
+    const macroTrend = Math.sin(macroCycle) * 1.5; // Institutional flow cycle
+    const microNoise = (Math.random() - 0.5) * 3.5; // Orderbook noise
+    price += macroTrend + microNoise;
 
     // Ultra-low latency jitter (microseconds)
-    latency = 0.8 + Math.random() * 0.4;
+    latency = 0.4 + Math.random() * 0.3;
 
     let batchPnl = 0;
     let lastTrade = null;
 
-    // Process 2000 trades per frame (approx 120,000 trades per second at 60 FPS)
+    // Citadel-style Market Making: 50.8% winrate, micro-edge capturing spread
     for (let i = 0; i < batchTradesPerFrame; i++) {
-      const win = Math.random() < 0.42; // Citadel winrate
-      const pnl = win ? 50 * (0.9 + Math.random() * 0.2) : -30 * (0.9 + Math.random() * 0.2);
+      const win = Math.random() < 0.508; 
+      const pnl = win ? (4.5 + Math.random() * 1.5) : -(4.6 + Math.random() * 1.5);
       batchPnl += pnl;
 
       if (i === batchTradesPerFrame - 1) {
         lastTrade = {
-          action: Math.random() < 0.5 ? 'LONG' : 'SHORT',
+          action: Math.random() < 0.5 ? 'MAKER-BUY' : 'MAKER-SELL',
           entry: price,
-          exit: price + (win ? 2 : -1),
+          exit: price + (win ? 0.25 : -0.25),
           pnl: pnl,
         };
       }
     }
 
     equity += batchPnl;
-    
-    // Inject the massive trade volume into the state
     state.tradeCount += (batchTradesPerFrame - 1);
 
     prependTradeRow({
@@ -408,10 +410,13 @@ const MockEngine = (() => {
       entry: lastTrade.entry,
       exit: lastTrade.exit,
       pnl: lastTrade.pnl,
-      durationSec: 0.001, // 1 millisecond hold
+      durationSec: 0.0004, // 400 microseconds (fiber optic routing)
     });
 
     renderEquity(equity);
+    
+    // Drawdown calculated dynamically from peak
+    if (equity > state.dayStartEquity) state.dayStartEquity = equity;
     renderDrawdown(equity);
 
     let [a, b, c] = randomSoftmax();
@@ -421,7 +426,11 @@ const MockEngine = (() => {
     });
 
     dom.chartPrice.textContent = fmtPrice(price);
-    updateChart(price);
+    
+    // Throttle chart visual updates slightly so it looks organic
+    if (Math.random() > 0.3) {
+      updateChart(price);
+    }
 
     if (dom.feedRate) {
       dom.feedRate.textContent = `~120,000 Hz`;
