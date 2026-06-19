@@ -24,8 +24,8 @@ const CONFIG = {
   MAX_FEED_LINES: 160,
   MAX_LOG_ROWS: 120,
 
-  START_EQUITY: 100, // Kessler Base Capital
-  DAILY_DD_LIMIT: 100.0, // No barriers
+  START_EQUITY: 100,
+  DAILY_DD_LIMIT: 100.0,
   DAILY_DD_WARN: 80.0,
 };
 
@@ -44,7 +44,7 @@ const dom = {
   feed:       document.getElementById('feed'),
   feedRate:   document.getElementById('feed-rate'),
   chartPrice: document.getElementById('chart-price'),
-  logBody:    document.getElementById('execution-log'),
+  logBody:    document.getElementById('log-body'),
   logCount:   document.getElementById('log-count'),
 };
 
@@ -127,43 +127,44 @@ function renderClock() {
    ============================================================ */
 
 function initChart() {
-  const container = document.getElementById('chart-container');
-  if (!container) return;
+  const container = document.getElementById('chart-stub');
   container.innerHTML = ''; // Clear placeholder
   
   const w = container.clientWidth || 600;
   const h = container.clientHeight || 400;
 
   state.chart = LightweightCharts.createChart(container, {
+    width: w,
+    height: h,
     layout: {
-      background: { type: 'solid', color: 'transparent' },
-      textColor: '#5E6472',
-      fontFamily: 'Inter, -apple-system, sans-serif',
+      background: { type: 'solid', color: '#000000' },
+      textColor: '#888',
     },
     grid: {
-      vertLines: { color: 'rgba(205, 201, 193, 0.4)' },
-      horzLines: { color: 'rgba(205, 201, 193, 0.4)' },
-    },
-    crosshair: {
-      mode: LightweightCharts.CrosshairMode.Normal,
-      vertLine: { color: 'rgba(43, 42, 38, 0.3)' },
-      horzLine: { color: 'rgba(43, 42, 38, 0.3)' },
+      vertLines: { color: '#111' },
+      horzLines: { color: '#111' },
     },
     rightPriceScale: {
-      borderColor: 'rgba(205, 201, 193, 0.8)',
+      borderVisible: false,
     },
     timeScale: {
-      borderColor: 'rgba(205, 201, 193, 0.8)',
+      borderVisible: false,
       timeVisible: true,
       secondsVisible: true,
     },
+    crosshair: {
+      mode: LightweightCharts.CrosshairMode.Normal,
+      vertLine: { color: '#333', labelBackgroundColor: '#111' },
+      horzLine: { color: '#333', labelBackgroundColor: '#111' },
+    }
   });
 
   state.lineSeries = state.chart.addSeries(LightweightCharts.LineSeries, {
-    color: '#A7C4C2',
-    lineWidth: 2,
-    crosshairMarkerRadius: 4,
-    lastPriceAnimation: 1,
+    color: '#888',
+    lineWidth: 1,
+    crosshairMarkerVisible: false,
+    lastValueVisible: false,
+    priceLineVisible: false,
   });
   
   // Robust resize observer
@@ -250,33 +251,44 @@ function pushFeedLine({ ts, longP, shortP, flatP }) {
    ============================================================ */
 
 function prependTradeRow(trade) {
-  const row = document.createElement('div');
-  row.className = 'log-entry ' + (trade.pnl >= 0 ? 'win' : 'loss');
+  const removeEmptyState = dom.logBody.querySelector('.log-empty-row');
+  if (removeEmptyState) removeEmptyState.remove();
 
-  const timeDiv = document.createElement('div');
-  timeDiv.className = 'log-time';
-  timeDiv.textContent = trade.time;
-  row.appendChild(timeDiv);
+  const tr = document.createElement('tr');
 
-  const actionDiv = document.createElement('div');
-  actionDiv.className = 'log-action';
-  actionDiv.textContent = trade.action;
-  row.appendChild(actionDiv);
+  const tdTime = document.createElement('td');
+  tdTime.className = 'col-time';
+  tdTime.textContent = trade.time;
+  tr.appendChild(tdTime);
 
-  const priceDiv = document.createElement('div');
-  priceDiv.className = 'log-price';
-  priceDiv.innerHTML = `${fmtPrice(trade.entry)} &rarr; ${fmtPrice(trade.exit)}`;
-  row.appendChild(priceDiv);
+  const tdAction = document.createElement('td');
+  const tag = document.createElement('span');
+  tag.className = 'action-tag action-tag--' + trade.action.toLowerCase();
+  tag.textContent = `[${trade.action}]`;
+  tdAction.appendChild(tag);
+  tr.appendChild(tdAction);
 
-  const pnlDiv = document.createElement('div');
-  pnlDiv.className = 'log-pnl ' + (trade.pnl >= 0 ? 'win-text' : 'loss-text');
-  pnlDiv.textContent = (trade.pnl >= 0 ? '+' : '') + fmtUSD(trade.pnl).replace('$', '$');
-  row.appendChild(pnlDiv);
+  const tdEntry = document.createElement('td');
+  tdEntry.textContent = fmtPrice(trade.entry);
+  tr.appendChild(tdEntry);
 
-  dom.logBody.insertBefore(row, dom.logBody.firstChild);
+  const tdExit = document.createElement('td');
+  tdExit.textContent = fmtPrice(trade.exit);
+  tr.appendChild(tdExit);
+
+  const tdPnl = document.createElement('td');
+  tdPnl.className = trade.pnl >= 0 ? 'pnl--pos' : 'pnl--neg';
+  tdPnl.textContent = (trade.pnl >= 0 ? '+' : '') + fmtUSD(trade.pnl).replace('$', '$');
+  tr.appendChild(tdPnl);
+
+  const tdDur = document.createElement('td');
+  tdDur.textContent = fmtDuration(trade.durationSec);
+  tr.appendChild(tdDur);
+
+  dom.logBody.insertBefore(tr, dom.logBody.firstChild);
 
   state.tradeCount += 1;
-  dom.logCount.textContent = `${state.tradeCount} Trades`;
+  dom.logCount.textContent = `${state.tradeCount} TRADE${state.tradeCount === 1 ? '' : 'S'}`;
 
   while (dom.logBody.childElementCount > CONFIG.MAX_LOG_ROWS) {
     dom.logBody.removeChild(dom.logBody.lastChild);
@@ -366,81 +378,70 @@ const MockEngine = (() => {
     return [r1 / sum, r2 / sum, r3 / sum];
   }
 
-  let running = false;
-  let inPosition = null;
-
   function tick() {
-    if (!running) return;
+    // price random walk
+    price += (Math.random() - 0.5) * 6;
 
-    // Kessler Price Action: 5M Sniper setup (slower macro moves)
-    price += (Math.random() - 0.5) * 3;
+    // latency jitter
+    latency = CONFIG.MOCK_LATENCY_BASE + Math.random() * 14;
 
-    // Standard broker latency (Funding Pips / MT5)
-    latency = 18 + Math.random() * 12;
+    // neural feed line — biased toward FLAT, matching sparse-trade reality
+    let [a, b, c] = randomSoftmax();
+    const flatP = Math.max(c, 0.55 + Math.random() * 0.35);
+    const remainder = 1 - flatP;
+    const longP = remainder * (0.4 + Math.random() * 0.2);
+    const shortP = remainder - longP;
 
-    // Trade Logic: Kessler SL50/TP100
-    if (!inPosition && Math.random() < 0.08) { // 8% chance to spot a setup per frame
+    pushFeedLine({
+      ts: fmtClockTime(new Date()),
+      longP, shortP, flatP,
+    });
+
+    dom.chartPrice.textContent = fmtPrice(price);
+    updateChart(price);
+
+    // trade lifecycle
+    if (!inPosition && Math.random() < 0.05) { // 5% chance to snipe per tick
       inPosition = {
         action: Math.random() < 0.5 ? 'LONG' : 'SHORT',
         entry: price,
         openedAt: Date.now(),
       };
-    } else if (inPosition && Date.now() - inPosition.openedAt > 400 + Math.random() * 600) {
-      // Trade Execution: Hold for 400ms-1000ms
-      const win = Math.random() < 0.45; // 45% win rate at 1:2 RR
-      const riskAmount = Math.max(equity * 0.25, 1); // 25% risk per trade ("no barriers")
-      const pnl = win ? (riskAmount * 2) : -riskAmount; // TP100 (+2R) / SL50 (-1R)
-      
-      const exitPrice = inPosition.action === 'LONG' ? inPosition.entry + (win ? 100 : -50) 
-                                                     : inPosition.entry - (win ? 100 : -50);
-      
+    } else if (inPosition && Date.now() - inPosition.openedAt > 400 + Math.random() * 800) {
+      // Sniper execution: Hold for 400ms-1200ms
+      const win = Math.random() < 0.45; // 45% win rate
+      const risk = Math.max(equity * 0.25, 1); // 25% account risk! NO BARRIERS.
+      const pnl = win ? risk * 2 : -risk; // 2:1 RR
+      const exit = inPosition.action === 'LONG' ? inPosition.entry + (win ? 10 : -5)
+                                                  : inPosition.entry - (win ? 10 : -5);
       equity += pnl;
 
       prependTradeRow({
         time: fmtClockTime(new Date()).slice(0, 8),
         action: inPosition.action,
         entry: inPosition.entry,
-        exit: exitPrice,
-        pnl: pnl,
+        exit,
+        pnl,
         durationSec: (Date.now() - inPosition.openedAt) / 1000,
       });
 
       renderEquity(equity);
-      if (equity > state.dayStartEquity) state.dayStartEquity = equity;
       renderDrawdown(equity);
       
       inPosition = null;
     }
 
-    let [a, b, c] = randomSoftmax();
-    pushFeedLine({
-      ts: fmtClockTime(new Date()),
-      longP: a, shortP: b, flatP: c,
-    });
-
-    dom.chartPrice.textContent = fmtPrice(price);
-    
-    // Smooth 60FPS chart updating
-    updateChart(price);
-
-    if (dom.feedRate) {
-      dom.feedRate.textContent = `~2 Hz`;
-    }
-
     renderStatus(true, latency);
-    
-    requestAnimationFrame(tick);
   }
 
   return {
     start() {
-      running = true;
       renderEquity(equity);
       renderDrawdown(equity);
-      requestAnimationFrame(tick);
+      timer = setInterval(tick, CONFIG.MOCK_TICK_MS);
     },
     stop() {
-      running = false;
+      clearInterval(timer);
     },
   };
 })();

@@ -3,89 +3,101 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KESSLER // RAMS</title>
+<title>KESSLER // OPS</title>
 
+<!-- Progressive enhancement only — full offline fallback stack is defined in styles.css -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="lightweight-charts.js"></script>
 
-<link rel="stylesheet" href="styles.css?v=7">
+<link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body>
 
-<header class="top-bar">
-  <div class="panel metric-card" id="metric-equity">
-    <span class="metric-card__label">Equity</span>
-    <span class="metric-card__value" id="val-equity">$100,000.00</span>
-  </div>
+<div class="shell">
 
-  <div class="panel metric-card" id="metric-dd">
-    <span class="metric-card__label">Capital Drawdown</span>
-    <span class="metric-card__value" id="val-dd">-0.0%</span>
-  </div>
+  <header class="killswitch" id="killswitch">
 
-  <div class="panel metric-card" id="metric-status">
-    <span class="metric-card__label">System Engine</span>
-    <div class="status-indicator">
-      <i id="status-dot" class="status-dot"></i>
-      <span id="status-text">HFT // SL50-TP100</span>
+    <div class="killswitch__brand">
+      <span class="brand__mark">KESSLER</span>
+      <span class="brand__sub">AUTONOMOUS EXECUTION&nbsp;//&nbsp;NAS100</span>
     </div>
-  </div>
 
-  <div class="panel metric-card">
-    <span class="metric-card__label">Clock</span>
-    <span class="metric-card__value" id="clock" style="font-family: var(--font-mono); font-size: 1.8rem;">00:00:00</span>
-  </div>
-</header>
+    <div class="killswitch__metrics">
 
-<main class="grid-layout">
+      <div class="metric" id="metric-equity">
+        <span class="metric__label">EQUITY</span>
+        <span class="metric__value" id="val-equity">$100.00</span>
+      </div>
 
-  <!-- Left Side Panel (Log Stats) -->
-  <aside class="panel side-view">
-    <div class="panel-header">
-      <span>Execution</span>
-      <span id="log-count">0 Trades</span>
+      <div class="metric metric--dd" id="metric-dd">
+        <span class="metric__label">DAILY DD&nbsp;/&nbsp;LIMIT</span>
+        <span class="metric__value" id="val-dd">-0.0%&nbsp;/&nbsp;5.0%</span>
+      </div>
+
+      <div class="metric" id="metric-status">
+        <div class="metric__label">SYSTEM</div>
+        <div class="metric__value metric__value--status">
+          <i id="status-dot" class="status-dot"></i>
+          <span id="status-text">BATCH 2 // SL50-TP100</span>
+        </div>  <span class="metric__divider">·</span>
+          <span id="val-latency">— ms</span>
+        </span>
+      </div>
+
     </div>
-    <!-- Execution log stats could go here if needed, but we put the tape on the bottom -->
-    <div style="padding: 24px; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-slate);">
-      <p>Strategy: Reversion</p>
-      <br>
-      <p>Holding: ~200ms</p>
-      <br>
-      <p>Latency: <span id="val-latency">— ms</span></p>
-    </div>
-  </aside>
 
-  <!-- Center Chart -->
-  <section class="panel chart-view">
-    <div class="panel-header">
-      <span>NAS100 / Geometric Trace</span>
-      <span id="chart-price">—</span>
-    </div>
-    <div id="chart-container">
-      <!-- Chart injected here -->
-    </div>
-  </section>
+    <div class="killswitch__clock" id="clock" aria-label="System clock">00:00:00 UTC</div>
 
-  <!-- Right Side Panel (Neural Tensors) -->
-  <aside class="panel side-view">
-    <div class="panel-header">
-      <span>Neural Tensors</span>
-      <span id="feed-rate">~20 Hz</span>
-    </div>
-    <div id="feed">
-      <!-- Neural feed here -->
-    </div>
-  </aside>
+  </header>
 
-</main>
+  <main class="floor">
 
-<!-- Bottom Execution Tape -->
-<div class="log-ticker" id="execution-log">
-  <!-- JS injected log blocks here -->
+    <aside class="panel panel--feed" aria-label="Neural feed">
+      <div class="panel__head">
+        <span>NEURAL FEED</span>
+        <span class="panel__head-sub" id="feed-rate">~3.3 Hz</span>
+      </div>
+      <div class="feed" id="feed" role="log" aria-live="polite" aria-relevant="additions"></div>
+    </aside>
+
+    <section class="panel panel--chart" aria-label="Price chart">
+      <div class="panel__head">
+        <span>NAS100&nbsp;//&nbsp;5M</span>
+        <span class="panel__head-sub" id="chart-price">—</span>
+      </div>
+      <div class="chart-stub" id="chart-stub">
+        <span class="chart-stub__text">[KESSLER_VISUAL_MATRIX_PENDING]</span>
+      </div>
+    </section>
+
+    <aside class="panel panel--log" aria-label="Execution log">
+      <div class="panel__head">
+        <span>EXECUTION LOG</span>
+        <span class="panel__head-sub" id="log-count">0 TRADES</span>
+      </div>
+      <div class="log-scroll">
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th scope="col">TIME</th>
+              <th scope="col">ACTION</th>
+              <th scope="col">ENTRY</th>
+              <th scope="col">EXIT</th>
+              <th scope="col">PNL</th>
+              <th scope="col">DUR</th>
+            </tr>
+          </thead>
+          <tbody id="log-body"></tbody>
+        </table>
+      </div>
+    </aside>
+
+  </main>
+
 </div>
 
-<script src="app.js?v=7" defer></script>
+<script src="app.js?v=9" defer></script>
 </body>
 </html>
