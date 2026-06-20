@@ -385,12 +385,10 @@ const MockEngine = (() => {
     // latency jitter
     latency = CONFIG.MOCK_LATENCY_BASE + Math.random() * 14;
 
-    // neural feed line — biased toward FLAT, matching sparse-trade reality
-    let [a, b, c] = randomSoftmax();
-    const flatP = Math.max(c, 0.55 + Math.random() * 0.35);
-    const remainder = 1 - flatP;
-    const longP = remainder * (0.4 + Math.random() * 0.2);
-    const shortP = remainder - longP;
+    // Neural feed line — NO FLAT ALLOWED. Only LONG and SHORT.
+    const flatP = 0.00;
+    const longP = Math.random();
+    const shortP = 1.0 - longP;
 
     pushFeedLine({
       ts: fmtClockTime(new Date()),
@@ -410,7 +408,8 @@ const MockEngine = (() => {
     } else if (inPosition && Date.now() - inPosition.openedAt > 400 + Math.random() * 800) {
       // Sniper execution: Hold for 400ms-1200ms
       const win = Math.random() < 0.45; // 45% win rate
-      const risk = Math.max(equity * 0.25, 1); // 25% account risk! NO BARRIERS.
+      // Kessler V2 fixed 1% account risk per trade
+      const risk = Math.max(equity * 0.01, 1);
       const pnl = win ? risk * 2 : -risk; // 2:1 RR
       const exit = inPosition.action === 'LONG' ? inPosition.entry + (win ? 10 : -5)
                                                   : inPosition.entry - (win ? 10 : -5);
