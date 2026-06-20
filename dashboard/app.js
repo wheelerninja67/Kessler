@@ -24,9 +24,10 @@ const CONFIG = {
   MAX_FEED_LINES: 160,
   MAX_LOG_ROWS: 120,
 
-  START_EQUITY: 100,
-  DAILY_DD_LIMIT: 100.0,
-  DAILY_DD_WARN: 80.0,
+  START_EQUITY: 10000,
+  DAILY_DD_LIMIT: 3.0,
+  MAX_DD_LIMIT: 5.0,
+  DAILY_DD_WARN: 2.5,
 };
 
 /* ============================================================
