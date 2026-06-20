@@ -10,7 +10,7 @@
 const CONFIG = {
   // Flip to false once your FastAPI backend is live. The WSClient
   // below is fully wired and ready — nothing else needs to change.
-  USE_MOCK: true,
+  USE_MOCK: false,
 
   WS_URL: 'ws://localhost:8000/ws/kessler',
   WS_RECONNECT_MIN_MS: 1000,
