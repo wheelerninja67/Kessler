@@ -7,3 +7,6 @@
 
 # Allow this .gitignore file itself
 !.gitignore
+
+# Allow root index redirect for GitHub Pages
+!index.html
