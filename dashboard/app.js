@@ -127,65 +127,11 @@ function renderClock() {
    ============================================================ */
 
 function initChart() {
-  const container = document.getElementById('chart-stub');
-  container.innerHTML = ''; // Clear placeholder
-  
-  const w = container.clientWidth || 600;
-  const h = container.clientHeight || 400;
-
-  state.chart = LightweightCharts.createChart(container, {
-    width: w,
-    height: h,
-    layout: {
-      background: { type: 'solid', color: '#000000' },
-      textColor: '#888',
-    },
-    grid: {
-      vertLines: { color: '#111' },
-      horzLines: { color: '#111' },
-    },
-    rightPriceScale: {
-      borderVisible: false,
-    },
-    timeScale: {
-      borderVisible: false,
-      timeVisible: true,
-      secondsVisible: true,
-    },
-    crosshair: {
-      mode: LightweightCharts.CrosshairMode.Normal,
-      vertLine: { color: '#333', labelBackgroundColor: '#111' },
-      horzLine: { color: '#333', labelBackgroundColor: '#111' },
-    }
-  });
-
-  state.lineSeries = state.chart.addSeries(LightweightCharts.LineSeries, {
-    color: '#888',
-    lineWidth: 1,
-    crosshairMarkerVisible: false,
-    lastValueVisible: false,
-    priceLineVisible: false,
-  });
-  
-  // Robust resize observer
-  const ro = new ResizeObserver(entries => {
-    if (entries.length === 0 || entries[0].target !== container) return;
-    const newRect = entries[0].contentRect;
-    if (newRect.width > 0 && newRect.height > 0) {
-      state.chart.applyOptions({ width: newRect.width, height: newRect.height });
-    }
-  });
-  ro.observe(container);
+  // Chart is now handled by lob_3d.js (WebGL 3D Matrix)
 }
 
 function updateChart(price) {
-  if (!state.lineSeries) return;
-  state.chartTime += 1; // Chart requires integer UNIX timestamps, so we artificially step 1s per tick
-  try {
-    state.lineSeries.update({ time: state.chartTime, value: price });
-  } catch (e) {
-    console.error("Chart update error:", e);
-  }
+  // Handled via WebGL DataTexture updates in lob_3d.js
 }
 
 /* ============================================================
