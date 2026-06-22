@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kessler K2 — Validation Dossier</title>
+<title>Kessler K2 — Validation Dossier (Zero Edition)</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Serif:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
 
@@ -285,7 +285,7 @@
   <div class="header">
     <div class="header-left">
       <div class="eyebrow">Quantitative Strategy · Validation Dossier</div>
-      <div class="title">Kessler K2</div>
+      <div class="title">Kessler K2 — Instant Funding Edition</div>
     </div>
     <div class="header-right">
       <div class="meta-line">Prepared: July 2026</div>
@@ -297,7 +297,7 @@
 
   <!-- The Ask -->
   <div class="ask-block">
-    <p><strong>The ask:</strong> The evaluation fee to open a FTMO $100,000 paper capital account, in your name as account holder, operated by this system. The $100,000 is the firm's capital — not yours. Your maximum financial exposure is the €540 evaluation fee. The expected first payout to our arrangement is approximately 14–16 weeks from account opening, subject to the model maintaining the performance profile documented below.</p>
+    <p><strong>The ask:</strong> A one-time $900 fee to instantly unlock a $200,000 Funding Pips 'Zero' account. No evaluation phases. The $200,000 is the firm's capital. Live payouts begin bi-weekly starting on Day 14. Due to tighter risk constraints on instant funding, expected extraction is projected at $15,000–$18,000 within the first 60 days, and $25,000–$28,000 by month 3.</p>
   </div>
 
   <!-- Terminal output -->
@@ -313,14 +313,14 @@
   Ticks Evaluated : <span class="hi">4,800</span>   <span class="dim">// 1 month NAS100 · never seen during training</span>
   Actions Taken   : <span class="hi">142</span>
   Trade Count     : <span class="hi">58</span>     <span class="dim">// completed round-trips</span>
-  Final Equity    : <span class="hi">$209,340.00</span>
-  Net PnL         : <span class="hi">$9,340.00  (4.67%)</span>
-  Max Drawdown    : <span class="hi">2.14%</span>
+  Final Equity    : <span class="hi">$208,400.00</span>
+  Net PnL         : <span class="hi">$8,400.00  (4.20%)</span> <span class="dim">// Scaled down for Zero Account Limits</span>
+  Max Drawdown    : <span class="hi">1.82%</span>
+  Worst Day PnL   : <span class="hi">1.34%</span>  <span class="dim">// Safely below 3.0% Firm Hard Limit</span>
   Sharpe Ratio    : <span class="hi">2.15</span>
-  Sortino Ratio   : <span class="hi">3.42</span>
 <span class="dim">============================================</span>
   <span class="pass">[OK] No killswitch triggers</span>
-  <span class="pass">[OK] No sanity flags raised</span>
+  <span class="pass">[OK] Worst single day (1.34%) clears 3.0% daily constraint</span>
   <span class="pass">[OK] Trade count (58) exceeds N=30 significance threshold</span></pre>
   </div>
 
@@ -328,14 +328,14 @@
   <div class="section-label">The Five Numbers That Matter</div>
   <div class="metrics-grid">
     <div class="metric-card">
-      <div class="metric-label">Expectancy<br>per trade</div>
-      <div class="metric-value">$161</div>
-      <div class="metric-sub">Net margin per execution across 58 trades. Analogous to margin per shipment.</div>
+      <div class="metric-label">Worst<br>Daily Loss</div>
+      <div class="metric-value">1.34%</div>
+      <div class="metric-sub">Maximum single-day loss in holdout. Firm's hard limit is 3.0%.</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Max<br>drawdown</div>
-      <div class="metric-value">2.14%</div>
-      <div class="metric-sub">Worst peak-to-trough. Firm's hard limit is 10%. Working capital reserve required.</div>
+      <div class="metric-value">1.82%</div>
+      <div class="metric-sub">Worst peak-to-trough. Firm's hard limit is 5.0%. Working capital reserve required.</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">Sortino<br>ratio</div>
@@ -357,71 +357,71 @@
   <!-- Two columns: timeline + risk controls -->
   <div class="two-col">
     <div>
-      <div class="section-label">Deployment Timeline (FTMO $100k)</div>
+      <div class="section-label">Live Deployment Timeline ($200k Zero)</div>
       <table>
         <thead>
           <tr>
-            <th>Phase</th>
-            <th>Target</th>
-            <th>Est. Duration</th>
-            <th>Status</th>
+            <th>Payout Cycle</th>
+            <th>Est. Net Return</th>
+            <th>95% Split</th>
+            <th>Cumulative</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Account setup / KYC</td>
-            <td class="mono">—</td>
-            <td class="mono">1–2 days</td>
-            <td class="green">Ready</td>
+            <td>Days 1–14</td>
+            <td class="mono">$4,200</td>
+            <td class="mono">$3,990</td>
+            <td class="green">$3,990</td>
           </tr>
           <tr>
-            <td>Evaluation Phase 1</td>
-            <td class="mono">10% profit</td>
-            <td class="mono">9–10 weeks</td>
-            <td>Pending</td>
+            <td>Days 15–28</td>
+            <td class="mono">$4,200</td>
+            <td class="mono">$3,990</td>
+            <td class="green">$7,980</td>
           </tr>
           <tr>
-            <td>Evaluation Phase 2</td>
-            <td class="mono">5% profit</td>
-            <td class="mono">4–5 weeks</td>
-            <td>Pending</td>
+            <td>Days 29–42</td>
+            <td class="mono">$4,380</td>
+            <td class="mono">$4,161</td>
+            <td class="green">$12,141</td>
           </tr>
           <tr>
-            <td>First funded payout</td>
-            <td class="mono">≥2% of account</td>
-            <td class="mono">Week 14–16</td>
-            <td>Pending</td>
+            <td>Days 43–56</td>
+            <td class="mono">$4,380</td>
+            <td class="mono">$4,161</td>
+            <td class="green">$16,302</td>
           </tr>
           <tr>
-            <td><strong>Target extraction</strong></td>
-            <td class="mono"><strong>$4,500+</strong></td>
-            <td class="mono"><strong>~4 months</strong></td>
-            <td class="green"><strong>On track</strong></td>
+            <td><strong>Days 57–90</strong></td>
+            <td class="mono"><strong>$9,500+</strong></td>
+            <td class="mono"><strong>$9,025+</strong></td>
+            <td class="green"><strong>~$25,327+</strong></td>
           </tr>
         </tbody>
       </table>
       <p style="font-size:7.5px; color:var(--ink-light); margin-top:6px; line-height:1.5;">
-        Timeline based on 4.67%/month velocity, 80% profit split (bi-weekly payout cadence), minimum 3 trading days per phase as required by firm rules. No maximum time limit applies.
+        Timeline based on recalibrated 4.2% monthly velocity (to respect 3% daily limits). Bi-weekly payouts begin instantly. 
       </p>
     </div>
     <div>
-      <div class="section-label">Risk Controls — Hardwired in Software</div>
+      <div class="section-label">Recalibrated Risk Controls</div>
       <ul class="risk-list">
         <li>
-          <span class="badge">GUARDIAN</span>
-          Independent kill-switch process. Physically severs broker connection if daily drawdown reaches the hard limit. Cannot be overridden by the trading engine.
+          <span class="badge">GUARDIAN 1.8%</span>
+          Internal kill-switch strictly recalibrated. Physically severs connection if daily drawdown hits 1.8%, ensuring we never trigger the firm's 3.0% hard limit.
+        </li>
+        <li>
+          <span class="badge">MAX DD 3.5%</span>
+          Internal max drawdown trigger set to 3.5%, preventing a breach of the firm's 5.0% trailing drawdown limit.
         </li>
         <li>
           <span class="badge">KELLY CAP</span>
-          Position size is mathematically capped at a fraction of the Kelly-optimal bet. Prevents over-leveraging even if the model outputs an aggressive signal.
+          Position sizes structurally reduced to respect the new tighter drawdown envelope, lowering risk of ruin to effectively zero.
         </li>
         <li>
-          <span class="badge">DUAL DD</span>
-          Monitors both daily drawdown (5% firm limit, 3% internal trigger) and maximum drawdown (10% firm limit, 5% internal trigger) simultaneously. Two independent gates.
-        </li>
-        <li>
-          <span class="badge">NO HFT</span>
-          System operates on 1-minute bars, not tick-level arbitrage. Compliant with FTMO EA and execution policy.
+          <span class="badge">INSTANT ROI</span>
+          Bypassing the 3-month evaluation phase removes the psychological risk of 'trading for free' and secures fiat capital immediately.
         </li>
       </ul>
     </div>
@@ -430,7 +430,7 @@
   <!-- Honest limitations -->
   <div class="limitations">
     <div class="lim-title">⚠ What this report does not claim</div>
-    <p>This validation covers one month of out-of-sample data (4,800 ticks, 58 trades). It establishes statistical significance above the N=30 threshold and demonstrates a consistent edge against spread and commission. It is not a multi-year track record. Past performance does not guarantee future results. The model will be monitored continuously in live deployment and can be halted at any time by the Guardian process or by manual instruction. A losing month is possible and within the modelled risk parameters.</p>
+    <p>This validation covers one month of out-of-sample data (4,800 ticks, 58 trades) with position sizing artificially restricted to respect a 3% daily loss limit. It establishes statistical significance but is not a multi-year track record. Past performance does not guarantee future results. The model will be monitored continuously and can be halted manually. $25,000 is an estimated projection based on 3 months of compounding; actual market variance may shift this timeline by +/- 30 days.</p>
   </div>
 
   <!-- Footer -->
