@@ -279,9 +279,7 @@ ul, p { margin: 0; padding: 0; }
   justify-content: center;
 }
 #tv-chart {
-  position: absolute;
-  inset: 0;
-}
+  
 
 .log-table th {
   position: sticky;
